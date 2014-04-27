@@ -6,11 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
-import parserCKY.grammar.PCFG;
+import parserCKY.grammar.ProbabilisticContextFreeGrammar;
 import parserCKY.parser.ParserCKY;
 import parserCKY.tree.Tree;
-import parserCKY.treebank.TreeBank;
-import parserCKY.treebank.TreeBankDep;
+import parserCKY.treebank.Treebank;
+import parserCKY.treebank.TreebankDependancy;
 
 public class StartClass {
 
@@ -64,14 +64,14 @@ public class StartClass {
 	 * @throws IOException 
 	 */
 	public static void parseDocument(String treebank, String inFilename, String outFilename,boolean dep) throws IOException{
-		TreeBank tb;
-		if (!dep) tb = new TreeBank(treebank,2);
-		else 	tb = new TreeBankDep(treebank);
-		PCFG gramm = new PCFG(tb);
+		Treebank tb;
+		if (!dep) tb = new Treebank(treebank,2);
+		else 	tb = new TreebankDependancy(treebank);
+		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		FileReader fr = new FileReader(new File(inFilename));
 		BufferedReader breader=new BufferedReader(fr);
 		String line;
-		TreeBank toExport = new TreeBank();
+		Treebank toExport = new Treebank();
 		try {
 			while ((line=breader.readLine())!=null){
 				toExport.addTree(ParserCKY.parse(line,gramm));
@@ -99,14 +99,14 @@ public class StartClass {
 	 */
 	public static void parse(String treebank,boolean dep){
 
-		TreeBank tb;
+		Treebank tb;
 		if (!dep){
-			tb = new TreeBank(treebank,2);
+			tb = new Treebank(treebank,2);
 		}
 		else{
-			tb = new TreeBankDep(treebank);
+			tb = new TreebankDependancy(treebank);
 		}
-		PCFG gramm = new PCFG(tb);
+		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		String sentence = " ";
 		Scanner sc = new Scanner(System.in);
 		System.out.println("prêt à tenter de parser votre phrase !");

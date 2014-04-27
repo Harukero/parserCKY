@@ -5,7 +5,7 @@ package parserCKY.grammar;
  * à chacune des règles est assigné un poids, en vu d'un traitement probabiliste de cette grammaire 
  * @author antoine,misun,xin
  */
-public class PCFGRule implements Comparable<PCFGRule> {
+public class ProbabilisticContextFreeGrammarRule implements Comparable<ProbabilisticContextFreeGrammarRule> {
 
 	public String non_terminal, rhr1; // non-terminal, élément de gauche de la règle binaire
 	public String rhr2 = null; // élément de droite de la règle binaire (null si on a une règle lexicale)
@@ -17,7 +17,7 @@ public class PCFGRule implements Comparable<PCFGRule> {
 	 * @param non_terminal
 	 * @param terminal
 	 */
-	public PCFGRule(String non_terminal, String terminal){
+	public ProbabilisticContextFreeGrammarRule(String non_terminal, String terminal){
 		this.non_terminal = non_terminal;
 		this.rhr1 = terminal;
 	}
@@ -28,7 +28,7 @@ public class PCFGRule implements Comparable<PCFGRule> {
 	 * @param left la partie gauche de la partie droite de règle
 	 * @param right la partie droite de la partie droite de règle
 	 */
-	public PCFGRule(String non_terminal,String left,String right){
+	public ProbabilisticContextFreeGrammarRule(String non_terminal,String left,String right){
 		this(non_terminal, left);
 		this.rhr2 = right;
 	}
@@ -69,12 +69,12 @@ public class PCFGRule implements Comparable<PCFGRule> {
 	 * @return true si oui, non sinon
 	 */
 	public boolean equals(Object rule){
-		if (rule instanceof PCFGRule){
-			if (this.isTerm() && ((PCFGRule)rule).isTerm()){
-				return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1);
+		if (rule instanceof ProbabilisticContextFreeGrammarRule){
+			if (this.isTerm() && ((ProbabilisticContextFreeGrammarRule)rule).isTerm()){
+				return (this.non_terminal.equals(((ProbabilisticContextFreeGrammarRule)rule).non_terminal)) && this.rhr1.equals(((ProbabilisticContextFreeGrammarRule)rule).rhr1);
 			}
-			else if (!this.isTerm() && !((PCFGRule)rule).isTerm()){
-				return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1) && this.rhr2.equals((((PCFGRule)rule).rhr2));
+			else if (!this.isTerm() && !((ProbabilisticContextFreeGrammarRule)rule).isTerm()){
+				return (this.non_terminal.equals(((ProbabilisticContextFreeGrammarRule)rule).non_terminal)) && this.rhr1.equals(((ProbabilisticContextFreeGrammarRule)rule).rhr1) && this.rhr2.equals((((ProbabilisticContextFreeGrammarRule)rule).rhr2));
 			}
 		}
 		return false;
@@ -91,7 +91,7 @@ public class PCFGRule implements Comparable<PCFGRule> {
 		return this.rhr1.equals(r1);
 	}
 
-	public int compareTo(PCFGRule rule) {
+	public int compareTo(ProbabilisticContextFreeGrammarRule rule) {
 		return this.toString().compareTo(rule.toString());
 	}
 }

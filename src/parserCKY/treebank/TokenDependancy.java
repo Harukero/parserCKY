@@ -1,18 +1,18 @@
 package parserCKY.treebank;
 
-public class TokenDep {
+public class TokenDependancy {
 
 	private int indice, indicePere ;
 	private String token, cat ;
 
-	public TokenDep (int indice, String token, String cat, int indicePere) {
+	public TokenDependancy (int indice, String token, String cat, int indicePere) {
 		this.indice = indice;
 		this.token = token;
 		this.cat = cat;
 		this.indicePere = indicePere;
 	}
 
-	public TokenDep (String ligne) {
+	public TokenDependancy (String ligne) {
 		String[] tokenDep = ligne.split("\\t");
 		this.token = tokenDep[1];
 		this.cat = tokenDep[4];

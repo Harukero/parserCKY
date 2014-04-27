@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import parserCKY.treebank.TokenDep;
+import parserCKY.treebank.TokenDependancy;
 
 /**
  * Un Tree est une repr�sentation de la structure de donn�e correspondant aux arbres.<br>
@@ -259,28 +259,28 @@ public class Tree {
 		return null; // en cas d'échec (mauvais fichier)
 	}
 
-	public static ArrayList<TokenDep> list2tokenDep (ArrayList<String> list) {
-		ArrayList<TokenDep> tableau = new ArrayList<TokenDep> ();		
+	public static ArrayList<TokenDependancy> list2tokenDep (ArrayList<String> list) {
+		ArrayList<TokenDependancy> tableau = new ArrayList<TokenDependancy> ();		
 		for (String lst : list) {
-			tableau.add(new TokenDep(lst));
+			tableau.add(new TokenDependancy(lst));
 		}
 		return tableau;
 	}
 
 	public static Tree tokenList2Tree (ArrayList<String> mesLignes) {
-		ArrayList<TokenDep> mesTokenDep = list2tokenDep(mesLignes);
+		ArrayList<TokenDependancy> mesTokenDep = list2tokenDep(mesLignes);
 		Tree arbre = new Tree ("");
-		TokenDep racine = racine(mesTokenDep);
+		TokenDependancy racine = racine(mesTokenDep);
 		arbre.addChild(new Tree (racine.getCat() + " " + racine.getToken()));
 		arbre.children.get(0).buildTree(racine.getIndice(), mesTokenDep);
 		return arbre;
 	}
 
-	private void buildTree (int indice, ArrayList<TokenDep> list) {
+	private void buildTree (int indice, ArrayList<TokenDependancy> list) {
 		boolean on_a_ajoute = false;
-		ArrayList<TokenDep> children = getChildren(indice,list);
-		for (Iterator<TokenDep> lines = children.iterator();lines.hasNext();) {
-			TokenDep line = lines.next();
+		ArrayList<TokenDependancy> children = getChildren(indice,list);
+		for (Iterator<TokenDependancy> lines = children.iterator();lines.hasNext();) {
+			TokenDependancy line = lines.next();
 			if (line.getIndice() >= indice && on_a_ajoute == false) { 	// si l'indice qu'on veut trouver est superieur a celui du pere, on ajoute avant cette indice.
 				on_a_ajoute = true;
 				this.headed();
@@ -302,8 +302,8 @@ public class Tree {
 		this.addChild(new Tree(newlabel)); // on ajoute V est aux fils.
 	}
 
-	private static TokenDep racine (ArrayList<TokenDep> list) {
-		for (TokenDep line : list) {
+	private static TokenDependancy racine (ArrayList<TokenDependancy> list) {
+		for (TokenDependancy line : list) {
 			if (line.getIndicePere() == 0) {
 				return line;
 			}
@@ -311,9 +311,9 @@ public class Tree {
 		return null;
 	}
 
-	private static ArrayList<TokenDep> getChildren (int indice, ArrayList<TokenDep> list) {
-		ArrayList<TokenDep> children = new ArrayList<TokenDep> ();
-		for (TokenDep line : list) {
+	private static ArrayList<TokenDependancy> getChildren (int indice, ArrayList<TokenDependancy> list) {
+		ArrayList<TokenDependancy> children = new ArrayList<TokenDependancy> ();
+		for (TokenDependancy line : list) {
 			if (line.getIndicePere() == indice) {
 				children.add(line);
 			}

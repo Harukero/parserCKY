@@ -11,11 +11,11 @@ import java.util.Iterator;
 
 import parserCKY.tree.Tree;
 
-public class TreeBankDep extends TreeBank implements Iterable<Tree>{
+public class TreebankDependancy extends Treebank implements Iterable<Tree>{
 	
 	private ArrayList<Tree> treebankDep = new ArrayList<Tree> ();
 	
-	public TreeBankDep (String filename) {
+	public TreebankDependancy (String filename) {
 		try {
 			FileReader fr = new FileReader(new File(filename));
 			BufferedReader breader=new BufferedReader(fr);
@@ -39,7 +39,7 @@ public class TreeBankDep extends TreeBank implements Iterable<Tree>{
 		}
 	}
 
-	public TreeBankDep(){
+	public TreebankDependancy(){
 		super();
 	}
 	

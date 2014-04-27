@@ -18,13 +18,13 @@ import parserCKY.tree.Tree;
  * @author antoine,misun,xin
  *
  */
-public class TreeBank implements Iterable<Tree>{
+public class Treebank implements Iterable<Tree>{
 
 	private Collection <Tree> treebank = new LinkedList<Tree>();
 	private int markovDegree = 2; // par défaut markovisation de degré 2 en cas de binarisation
 
-	
-	public TreeBank(){
+
+	public Treebank(){
 
 	}
 
@@ -34,7 +34,7 @@ public class TreeBank implements Iterable<Tree>{
 	 * d'un treebank et construit la collection des arbres binaires correspondants à ces chaînes
 	 * @param filename
 	 */
-	public TreeBank(String filename){
+	public Treebank(String filename){
 		try {
 			FileReader fr = new FileReader(new File(filename));
 			BufferedReader breader=new BufferedReader(fr);
@@ -55,7 +55,7 @@ public class TreeBank implements Iterable<Tree>{
 	 * @param filename fichier contenant un treebank
 	 * @param degre degré de markovisation
 	 */
-	public TreeBank (String filename, int degre){
+	public Treebank (String filename, int degre){
 		this(filename);
 		this.markovDegree = degre;
 	}
@@ -69,8 +69,9 @@ public class TreeBank implements Iterable<Tree>{
 	 * Cette méthode permet de binariser le treebank entier, selon un certain degré de markovisation.
 	 */
 	public void binariseTreeBank(){
-		for (Tree t : this)
+		for (Tree t : this){
 			t.binarise(this.markovDegree);
+		}
 	}
 
 	/**
@@ -83,8 +84,9 @@ public class TreeBank implements Iterable<Tree>{
 
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		for (Tree t : this)
+		for (Tree t : this){
 			buffer.append(t.toString()+"\n");
+		}
 		return buffer.toString();
 	}
 
@@ -116,19 +118,19 @@ public class TreeBank implements Iterable<Tree>{
 
 	public void exportSent(String out) {
 		// Attention ! Cette méthode écrit à la suite du fichier mis en argument, pas par dessus !
-				try{
-					FileWriter fw = new FileWriter(out, true);
-					BufferedWriter output = new BufferedWriter(fw);
-					for (Tree t : this)
-						output.write(t.toSentence()+"\n");
-					output.flush();
-					output.close();
-					System.out.println("fichier créé");
-				}
-				catch(IOException ioe){
-					System.out.print("Erreur : ");
-					ioe.printStackTrace();
-				}
+		try{
+			FileWriter fw = new FileWriter(out, true);
+			BufferedWriter output = new BufferedWriter(fw);
+			for (Tree t : this)
+				output.write(t.toSentence()+"\n");
+			output.flush();
+			output.close();
+			System.out.println("fichier créé");
+		}
+		catch(IOException ioe){
+			System.out.print("Erreur : ");
+			ioe.printStackTrace();
+		}
 	}
 
 }
