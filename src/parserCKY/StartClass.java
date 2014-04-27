@@ -1,4 +1,4 @@
-package parser;
+package parserCKY;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,7 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Tests {
+import parserCKY.grammar.PCFG;
+import parserCKY.parser.ParserCKY;
+import parserCKY.tree.Tree;
+import parserCKY.treebank.TreeBank;
+import parserCKY.treebank.TreeBankDep;
+
+public class StartClass {
 
 	public static void main(String[] args) throws IOException{
 		int nb_args = args.length;
@@ -94,8 +100,12 @@ public class Tests {
 	public static void parse(String treebank,boolean dep){
 
 		TreeBank tb;
-		if (!dep) tb = new TreeBank(treebank,2);
-		else 	tb = new TreeBankDep(treebank);
+		if (!dep){
+			tb = new TreeBank(treebank,2);
+		}
+		else{
+			tb = new TreeBankDep(treebank);
+		}
 		PCFG gramm = new PCFG(tb);
 		String sentence = " ";
 		Scanner sc = new Scanner(System.in);

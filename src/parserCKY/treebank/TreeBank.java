@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.treebank;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import parserCKY.tree.Tree;
+
 /**
  * La classe de TreeBank représente un treebank, dans le sens le plus classique du terme, soit une collection d'arbres 
  * syntaxiques déjà annotés.
@@ -18,8 +20,8 @@ import java.util.LinkedList;
  */
 public class TreeBank implements Iterable<Tree>{
 
-	Collection <Tree> treebank = new LinkedList<Tree>();
-	int markovDegree = 2; // par défaut markovisation de degré 2 en cas de binarisation
+	private Collection <Tree> treebank = new LinkedList<Tree>();
+	private int markovDegree = 2; // par défaut markovisation de degré 2 en cas de binarisation
 
 	
 	public TreeBank(){

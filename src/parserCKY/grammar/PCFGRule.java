@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.grammar;
 
 /**
  * Une instance de PCFGRule représente une règle d'une grammaire CNF<br>
@@ -50,17 +50,19 @@ public class PCFGRule implements Comparable<PCFGRule> {
 	}
 
 	public String toString(){
-		if (this.isTerm())
+		if (this.isTerm()){
 			return this.non_terminal+" --> "+this.rhr1;
+		}
 		return this.non_terminal+" --> "+this.rhr1+" "+this.rhr2;
 	}
 
 	public String toExport(){
-		if (this.isTerm())
+		if (this.isTerm()){
 			return this.non_terminal+"\t"+this.rhr1+"\t"+Math.exp(this.poids);
+		}
 		return this.non_terminal+"\t"+this.rhr1+"\t"+this.rhr2+"\t"+Math.exp(this.poids);
 	}
-	
+
 	/**
 	 * Indique si une règle est égale à une autre
 	 * @param rule
@@ -68,23 +70,27 @@ public class PCFGRule implements Comparable<PCFGRule> {
 	 */
 	public boolean equals(Object rule){
 		if (rule instanceof PCFGRule){
-		if (this.isTerm() && ((PCFGRule)rule).isTerm())
-			return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1);
-		else if (!this.isTerm() && !((PCFGRule)rule).isTerm())
-			return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1) && this.rhr2.equals((((PCFGRule)rule).rhr2));
+			if (this.isTerm() && ((PCFGRule)rule).isTerm()){
+				return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1);
+			}
+			else if (!this.isTerm() && !((PCFGRule)rule).isTerm()){
+				return (this.non_terminal.equals(((PCFGRule)rule).non_terminal)) && this.rhr1.equals(((PCFGRule)rule).rhr1) && this.rhr2.equals((((PCFGRule)rule).rhr2));
+			}
 		}
 		return false;
 	}
-	
+
 	public int hashCode(){
 		return this.toExport().hashCode();
 	}
-	
+
 	public boolean hasRHR(String r1){
-		if (!this.isTerm()) return false;
+		if (!this.isTerm()){
+			return false;
+		}
 		return this.rhr1.equals(r1);
 	}
-	
+
 	public int compareTo(PCFGRule rule) {
 		return this.toString().compareTo(rule.toString());
 	}

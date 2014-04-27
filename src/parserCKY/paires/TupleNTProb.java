@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.paires;
 
 public class TupleNTProb  implements Paire<Integer, Double>, Comparable<TupleNTProb>{
 

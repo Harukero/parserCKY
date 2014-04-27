@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.grammar;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import parserCKY.paires.TupleNTProb;
+import parserCKY.tree.Tree;
+import parserCKY.treebank.TreeBank;
 
 /**
  * Une instance de PCFG est une représentation d'une grammaire sous forme CNF<br>
@@ -24,10 +28,26 @@ public class PCFG{
 	// { NON-TERMINAL : nb de fois vu }
 	private HashMap <String,Double> countsNT = new HashMap<String,Double>();
 	//l'axiome de la grammaire
-	String axiome = null;
+	private String axiome = null;
+
+	public String getAxiome() {
+		return axiome;
+	}
+
+	public void setAxiome(String axiome) {
+		this.axiome = axiome;
+	}
 
 	// permet d'encoder les non-terminaux sur des nombres
-	ArrayList<String> ntPos = new ArrayList<String>();
+	private ArrayList<String> ntPos = new ArrayList<String>();
+
+	public ArrayList<String> getNtPos() {
+		return ntPos;
+	}
+
+	public void setNtPos(ArrayList<String> ntPos) {
+		this.ntPos = ntPos;
+	}
 
 	// une matrice à deux dimensions contenant des tableaux de PaireLPoids
 	// pour deux  nt encodés par des nombres, on a l'ensemble des NT les produisants, avec la proba de cet évènement 
@@ -62,10 +82,10 @@ public class PCFG{
 	}
 
 	public static void exportGramm(String fichier){
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Méthode privée qui permet de ne conserver chaque règles qu'une seule fois tout en mettant à jour les comptes.
 	 * Cette méthode doit être appliquée aprés que gramm et lexicalRules aient été triés.
@@ -88,8 +108,9 @@ public class PCFG{
 		HashSet<TupleNTProb> rares = new HashSet<TupleNTProb>();
 		for (PCFGRule i : this.lexRules){
 			double probLambda = Math.log(lambda/(this.countsNT.get(i.non_terminal)+(this.taille_vocabulaire*lambda)));
-			if (i.poids<=3)
+			if (i.poids<=3){
 				rares.add(new TupleNTProb(this.ntPos.indexOf(i.non_terminal),probLambda));
+			}
 			i.poids = Math.log((i.poids+lambda)/(this.countsNT.get(i.non_terminal)+(this.taille_vocabulaire*lambda)));
 			if (!this.lookUpMatriceLex.containsKey(i.rhr1))
 				this.lookUpMatriceLex.put(i.rhr1, new ArrayList<TupleNTProb>());
@@ -97,12 +118,14 @@ public class PCFG{
 			int taille = i.rhr1.length();
 			if (taille >= 3){
 				String suff = i.rhr1.substring(taille-3,taille).toLowerCase();
-				if(!this.lookUpMatriceSuffixLex.containsKey(suff))
+				if(!this.lookUpMatriceSuffixLex.containsKey(suff)){
 					this.lookUpMatriceSuffixLex.put(suff, new HashSet<TupleNTProb>());
+				}
 				this.lookUpMatriceSuffixLex.get(suff).add(new TupleNTProb(this.ntPos.indexOf(i.non_terminal),probLambda));
 			}
-			if (Character.isDigit(i.rhr1.charAt(0)))
+			if (Character.isDigit(i.rhr1.charAt(0))){
 				digits.add(new TupleNTProb(this.ntPos.indexOf(i.non_terminal),probLambda));
+			}
 		}
 		this.lookUpMatriceSuffixLex.put("digits", digits);
 		this.lookUpMatriceSuffixLex.put("dummies", rares);
@@ -170,8 +193,9 @@ public class PCFG{
 		int r2 = this.ntPos.indexOf(rule.rhr2);
 		TupleNTProb premierePaire = new TupleNTProb(this.ntPos.indexOf(rule.non_terminal),rule.poids);
 		TupleNTProb[] toAdd = {premierePaire};
-		if (this.lookUpMatrice.length==0)
+		if (this.lookUpMatrice.length==0){
 			this.lookUpMatrice[r1][r2] = toAdd;
+		}
 		else this.lookUpMatrice[r1][r2] = this.concat(this.lookUpMatrice[r1][r2], toAdd);
 	}
 
@@ -188,12 +212,16 @@ public class PCFG{
 	 * @param t l'arbre doit être binarisé
 	 */
 	private void fillGrammar(Tree t){
-		if (t.label.equals(""))
-			for (Tree child : t.children )
+		if (t.getLabel().equals("")){
+			for (Tree child : t.getChildren() ){
 				this.fillGrammar(child);
+			}
+		}
 		else{
-			if (this.axiome==null) // mise en place de l'axiome
-				this.axiome = t.label;
+			if (this.axiome==null){ // mise en place de l'axiome
+
+				this.axiome = t.getLabel();
+			}
 			if (t.is_leaf()){ // règle lexicale !
 				fillLexicalRule(t);
 			}
@@ -204,16 +232,17 @@ public class PCFG{
 	}
 
 	private void fillBinRule(Tree t) {
-		String elem1 = t.children.get(0).label.split(" ")[0];
-		String elem2 = t.children.get(1).label.split(" ")[0];
-		this.binRules.add(new PCFGRule(t.label, elem1, elem2));
-		this.updateCountsNonTerm(t.label);
-		for (Tree tree : t.children)
+		String elem1 = t.getChildren().get(0).getLabel().split(" ")[0];
+		String elem2 = t.getChildren().get(1).getLabel().split(" ")[0];
+		this.binRules.add(new PCFGRule(t.getLabel(), elem1, elem2));
+		this.updateCountsNonTerm(t.getLabel());
+		for (Tree tree : t.getChildren()){
 			this.fillGrammar(tree);
+		}
 	}
 
 	private void fillLexicalRule(Tree t) {
-		String[]ntAndLex = t.label.split(" ");
+		String[]ntAndLex = t.getLabel().split(" ");
 		PCFGRule maregle = new PCFGRule(ntAndLex[0],ntAndLex[1]);
 		this.lexRules.add(maregle); //ajout de la règle lexicale
 		this.occurences_lexique++;
@@ -222,18 +251,22 @@ public class PCFG{
 
 	// méthode privée qui met à jour les comptes des non-terminaux de la grammaire
 	private void updateCountsNonTerm(String nt){
-		if (this.countsNT.containsKey(nt))
+		if (this.countsNT.containsKey(nt)){
 			this.countsNT.put(nt,new Double(this.countsNT.get(nt)+1.)) ; //dico[nt] += 1
-		else
+		}
+		else{
 			this.countsNT.put(nt,new Double(1.)) ; // dico[nt] = 1
+		}
 	}
 
 	public String toString(){
 		StringBuffer toReturn = new StringBuffer();
-		for (PCFGRule rule : this.binRules)
+		for (PCFGRule rule : this.binRules){
 			toReturn.append(rule.toString()+"\n");
-		for (PCFGRule rule : this.lexRules)
+		}
+		for (PCFGRule rule : this.lexRules){
 			toReturn.append(rule.toString()+"\n");
+		}
 		return toReturn.toString();
 	}
 
@@ -252,8 +285,9 @@ public class PCFG{
 			output.flush();
 			output.close();
 			output = new BufferedWriter(new FileWriter(file_lexrules,true));
-			for (PCFGRule r : this.lexRules)
+			for (PCFGRule r : this.lexRules){
 				output.write(r.toExport()+"\n");
+			}
 			output.flush();
 			output.close();
 			System.out.println("fichier créé");
@@ -287,17 +321,20 @@ public class PCFG{
 		if (size>=3){
 			toReturnSuff = returnSuff(size,toReturnSuff,r1);
 		}
-		if (toReturnSuff.size()==0)
+		if (toReturnSuff.size()==0){
 			toReturnSuff = this.lookUpMatriceSuffixLex.get("dummies");
+		}
 		return toReturnSuff.toArray(new TupleNTProb[toReturnSuff.size()]);
 	}
 
 	private HashSet<TupleNTProb> returnSuff(int size, HashSet<TupleNTProb> toReturnSuff,String r1) {
 		String suffixe = r1.substring(size-3, size).toLowerCase();
-		if (toReturnSuff.size()==0 && this.lookUpMatriceSuffixLex.containsKey(suffixe))
+		if (toReturnSuff.size()==0 && this.lookUpMatriceSuffixLex.containsKey(suffixe)){
 			this.lookUpMatriceSuffixLex.get(suffixe);
-		if (toReturnSuff.size()==0 && Character.isDigit(r1.charAt(size-1)))
+		}
+		if (toReturnSuff.size()==0 && Character.isDigit(r1.charAt(size-1))){
 			toReturnSuff = this.lookUpMatriceSuffixLex.get("digits");
+		}
 		return toReturnSuff;
 	}
 }

@@ -1,10 +1,12 @@
-package parser;
+package parserCKY.tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+
+import parserCKY.treebank.TokenDep;
 
 /**
  * Un Tree est une repr�sentation de la structure de donn�e correspondant aux arbres.<br>
@@ -51,8 +53,24 @@ public class Tree {
 		return true;
 	}
 
-	public String label; //le nom de la racine de l'arbre
-	public List <Tree> children = new ArrayList<Tree>(); // la liste des enfants qui partent de la racine de notre arbre
+	private String label; //le nom de la racine de l'arbre
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public List<Tree> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<Tree> children) {
+		this.children = children;
+	}
+
+	private List <Tree> children = new ArrayList<Tree>(); // la liste des enfants qui partent de la racine de notre arbre
 
 	/**
 	 * Constructeur d'un Tree, construit un arbre sans fils (une feuille)

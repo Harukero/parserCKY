@@ -1,4 +1,6 @@
-package parser;
+package parserCKY.paires;
+
+import parserCKY.tree.Tree;
 
 public class TupleNTTree  implements Paire<Integer, Tree>, Comparable<TupleNTTree>{
 

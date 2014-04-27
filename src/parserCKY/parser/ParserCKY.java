@@ -1,11 +1,14 @@
-package parser;
+package parserCKY.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import parser.TupleNTProb;
+import parserCKY.grammar.PCFG;
+import parserCKY.paires.TupleNTProb;
+import parserCKY.paires.TupleNTTree;
+import parserCKY.tree.Tree;
 
 public class ParserCKY {
 
@@ -14,6 +17,10 @@ public class ParserCKY {
 	private static int span=2,begin=0,end,split;
 	private static HashMap<Integer,Double> aAjouter;
 	private static HashMap<Integer,Tree> mesArbres;
+	
+	private ParserCKY(){
+		
+	}
 	
 	/**
 	 * Cette méthode prend une phrase en imput et vérifie si cette phrase peut être<br>
@@ -96,9 +103,11 @@ public class ParserCKY {
 		Double proba = null;
 		Tree toReturn = new Tree(" ");
 		boolean found = false;
+		String axiome = gramm.getAxiome();
 		for (int i=0 ; i<probPossibles.length;i++){ // ici on vérifie que la phrase d'input est dans le langage 
 			TupleNTProb maPaire = probPossibles[i];
-			if (gramm.ntPos.get(maPaire.getL()).split("\\*")[0].equals(gramm.axiome)){ // si c'est le cas, on renvoie l'arbre de parsing
+			String categoryPaire = gramm.getNtPos().get(maPaire.getL()).split("\\*")[0];
+			if (categoryPaire.equals(axiome)){ // si c'est le cas, on renvoie l'arbre de parsing
 				found = true;
 				if (proba == null || maPaire.getR()>proba){
 					toReturn = new Tree("",arbresPossibles[i].getR());
@@ -116,18 +125,19 @@ public class ParserCKY {
 
 	private static void buildTree(Tree tree,PCFG gramm) {
 		if (tree.is_leaf()){
-			int spacePos = tree.label.indexOf(' ');
-			Integer key = Integer.valueOf(tree.label.substring(0, spacePos));
-			String category = gramm.ntPos.get(key);
-			tree.label = category +" "+tree.label.substring(spacePos+1);
+			int spacePos = tree.getLabel().indexOf(' ');
+			Integer key = Integer.valueOf(tree.getLabel().substring(0, spacePos));
+			String category = gramm.getNtPos().get(key);
+			tree.setLabel(category +" "+tree.getLabel().substring(spacePos+1));
 		}
 		else {
-			if (!tree.label.equals("")){
-				Integer category = Integer.valueOf(tree.label);
-				tree.label = gramm.ntPos.get(category);
+			if (!tree.getLabel().equals("")){
+				Integer category = Integer.valueOf(tree.getLabel());
+				tree.setLabel(gramm.getNtPos().get(category));
 			}
-			for (Tree t : tree.children)
+			for (Tree t : tree.getChildren()){
 				buildTree(t,gramm);
+			}
 		}
 	}
 

@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.treebank;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import parserCKY.tree.Tree;
+
 public class TreeBankDep extends TreeBank implements Iterable<Tree>{
 	
-	ArrayList<Tree> treebankDep = new ArrayList<Tree> ();
+	private ArrayList<Tree> treebankDep = new ArrayList<Tree> ();
 	
 	public TreeBankDep (String filename) {
 		try {

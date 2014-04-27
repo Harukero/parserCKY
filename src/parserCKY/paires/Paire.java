@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.paires;
 
 /**
  * Une classe de type Paire est une classe qui à un élément donné associe un autre élément

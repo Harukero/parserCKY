@@ -1,4 +1,4 @@
-package parser;
+package parserCKY.treebank;
 
 public class TokenDep {
 
