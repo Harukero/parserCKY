@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import parserCKY.paires.NonTerminalElementToProbability;
 import parserCKY.tree.Tree;
@@ -21,12 +24,12 @@ import parserCKY.treebank.Treebank;
  */
 public class ProbabilisticContextFreeGrammar{
 	// liste de toutes les règles non lexicales de la grammaire
-	private ArrayList<ProbabilisticContextFreeGrammarRule> binaryRules = new ArrayList<ProbabilisticContextFreeGrammarRule>();
+	private List<ProbabilisticContextFreeGrammarRule> binaryRules = new ArrayList<ProbabilisticContextFreeGrammarRule>();
 	//liste de toutes les règles lexicales de la grammaire
-	private ArrayList <ProbabilisticContextFreeGrammarRule> lexicalRules = new ArrayList<ProbabilisticContextFreeGrammarRule>();
+	private List <ProbabilisticContextFreeGrammarRule> lexicalRules = new ArrayList<ProbabilisticContextFreeGrammarRule>();
 	// une HashMap qui à chaque partie gauche lui associe le nombre de fois où elle a été vue
 	// { NON-TERMINAL : nb de fois vu }
-	private HashMap <String,Double> countsNonTerminalElements = new HashMap<String,Double>();
+	private Map <String,Double> countsNonTerminalElements = new HashMap<String,Double>();
 	//l'axiome de la grammaire
 	private String axiome = null;
 
@@ -39,21 +42,21 @@ public class ProbabilisticContextFreeGrammar{
 	}
 
 	// permet d'encoder les non-terminaux sur des nombres
-	private ArrayList<String> nonTermnalElementPosition = new ArrayList<String>();
+	private List<String> nonTermnalElementPosition = new ArrayList<String>();
 
-	public ArrayList<String> getNtPos() {
+	public List<String> getNtPos() {
 		return nonTermnalElementPosition;
 	}
 
-	public void setNtPos(ArrayList<String> ntPos) {
+	public void setNtPos(List<String> ntPos) {
 		this.nonTermnalElementPosition = ntPos;
 	}
 
 	// une matrice à deux dimensions contenant des tableaux de PaireLPoids
 	// pour deux  nt encodés par des nombres, on a l'ensemble des NT les produisants, avec la proba de cet évènement 
 	private NonTerminalElementToProbability [][][] lookUpMatrice; 
-	private HashMap<String,ArrayList<NonTerminalElementToProbability>> lexicalLookUpMatrix = new HashMap<String,ArrayList<NonTerminalElementToProbability>> ();
-	private HashMap<String,HashSet<NonTerminalElementToProbability>> lexicalSuffixesLookUpMatrix = new HashMap<String,HashSet<NonTerminalElementToProbability>> ();
+	private Map<String,List<NonTerminalElementToProbability>> lexicalLookUpMatrix = new HashMap<String,List<NonTerminalElementToProbability>> ();
+	private Map<String,Set<NonTerminalElementToProbability>> lexicalSuffixesLookUpMatrix = new HashMap<String,Set<NonTerminalElementToProbability>> ();
 
 	private double lexicalTokens = 0;
 	private double vocabularySize=0;
@@ -62,17 +65,17 @@ public class ProbabilisticContextFreeGrammar{
 	/**
 	 * Constructeur d'une CNFGrammWithProbs.
 	 * Si le paramètre n'est pas binarisé, on le binarise de force
-	 * @param tb une instance de TreeBank
+	 * @param trebank une instance de TreeBank
 	 */
-	public ProbabilisticContextFreeGrammar(Treebank tb){
-		tb.binariseTreeBank();
-		for (Tree t : tb) {
-			this.fillGrammar(t);
+	public ProbabilisticContextFreeGrammar(Treebank trebank){
+		trebank.binariseTreeBank();
+		for (Tree tree : trebank) {
+			this.fillGrammar(tree);
 		}
 		System.out.println("Grammaire importée.");
 		this.nonTermnalsNumber = 0;
-		for (String nt : this.countsNonTerminalElements.keySet()){
-			this.nonTermnalElementPosition.add(nt);
+		for (String nonTerminal : this.countsNonTerminalElements.keySet()){
+			this.nonTermnalElementPosition.add(nonTerminal);
 			this.nonTermnalsNumber++;
 		}
 		Collections.sort(this.binaryRules); // tri des règles binaires NP -> Det N
@@ -80,11 +83,6 @@ public class ProbabilisticContextFreeGrammar{
 		this.filterAndCounts();
 		System.out.println("Grammaire terminée.\nParsing désormais possible.");
 	}
-
-	public static void exportGramm(String fichier){
-
-	}
-
 
 	/**
 	 * Méthode privée qui permet de ne conserver chaque règles qu'une seule fois tout en mettant à jour les comptes.
@@ -104,8 +102,8 @@ public class ProbabilisticContextFreeGrammar{
 	}
 
 	private void smooth(double lambda) {
-		HashSet<NonTerminalElementToProbability> digits = new HashSet<NonTerminalElementToProbability>();
-		HashSet<NonTerminalElementToProbability> rares = new HashSet<NonTerminalElementToProbability>();
+		Set<NonTerminalElementToProbability> digits = new HashSet<NonTerminalElementToProbability>();
+		Set<NonTerminalElementToProbability> rares = new HashSet<NonTerminalElementToProbability>();
 		for (ProbabilisticContextFreeGrammarRule i : this.lexicalRules){
 			double probLambda = Math.log(lambda/(this.countsNonTerminalElements.get(i.non_terminal)+(this.vocabularySize*lambda)));
 			if (i.poids<=3){
@@ -180,7 +178,7 @@ public class ProbabilisticContextFreeGrammar{
 		for (int i=0;i<nt_size;i++){
 			this.lookUpMatrice[i] = new NonTerminalElementToProbability[nt_size][];
 			for (int j=0;j<nt_size;j++){
-				this.lookUpMatrice[i][j] = new NonTerminalElementToProbability[0];;
+				this.lookUpMatrice[i][j] = new NonTerminalElementToProbability[0];
 			}
 		}
 		for (ProbabilisticContextFreeGrammarRule rule : this.binaryRules){
@@ -209,24 +207,24 @@ public class ProbabilisticContextFreeGrammar{
 
 	/**
 	 * Méthode privée de remplissage de notre grammaire à partir d'un arbre
-	 * @param t l'arbre doit être binarisé
+	 * @param tree l'arbre doit être binarisé
 	 */
-	private void fillGrammar(Tree t){
-		if (t.getLabel().equals("")){
-			for (Tree child : t.getChildren() ){
+	private void fillGrammar(Tree tree){
+		if (tree.getLabel().equals("")){
+			for (Tree child : tree.getChildren() ){
 				this.fillGrammar(child);
 			}
 		}
 		else{
 			if (this.axiome==null){ // mise en place de l'axiome
 
-				this.axiome = t.getLabel();
+				this.axiome = tree.getLabel();
 			}
-			if (t.is_leaf()){ // règle lexicale !
-				fillLexicalRule(t);
+			if (tree.is_leaf()){ // règle lexicale !
+				fillLexicalRule(tree);
 			}
 			else{ // règle binaire
-				fillBinRule(t);
+				fillBinRule(tree);
 			}
 		}
 	}
@@ -274,9 +272,9 @@ public class ProbabilisticContextFreeGrammar{
 	 * Méthode permettant d'exporter l'instance courante de notre grammaire dans un fichier
 	 * @param string
 	 */
-	public void exportGramm(String file_binrules,String file_lexrules) {
+	public void exportGramm(String binaryRulesFilePath,String lexicalRulesFilePath) {
 		try{
-			FileWriter fw = new FileWriter(file_binrules, true);
+			FileWriter fw = new FileWriter(binaryRulesFilePath, true);
 			BufferedWriter output = new BufferedWriter(fw);
 			output.write(this.axiome+"\n");
 			for (ProbabilisticContextFreeGrammarRule t : this.binaryRules){
@@ -284,9 +282,9 @@ public class ProbabilisticContextFreeGrammar{
 			}
 			output.flush();
 			output.close();
-			output = new BufferedWriter(new FileWriter(file_lexrules,true));
-			for (ProbabilisticContextFreeGrammarRule r : this.lexicalRules){
-				output.write(r.toExport()+"\n");
+			output = new BufferedWriter(new FileWriter(lexicalRulesFilePath,true));
+			for (ProbabilisticContextFreeGrammarRule rule : this.lexicalRules){
+				output.write(rule.toExport()+"\n");
 			}
 			output.flush();
 			output.close();
@@ -311,15 +309,15 @@ public class ProbabilisticContextFreeGrammar{
 	}
 
 	public NonTerminalElementToProbability[] lookUp(String r1){ //lookup pour les règles lexicales
-		ArrayList<NonTerminalElementToProbability> toReturn;
+		List<NonTerminalElementToProbability> toReturn;
 		if (this.lexicalLookUpMatrix.containsKey(r1)){
 			toReturn = this.lexicalLookUpMatrix.get(r1);
 			return toReturn.toArray(new NonTerminalElementToProbability[toReturn.size()]);
 		}
-		HashSet<NonTerminalElementToProbability>toReturnSuff = new HashSet<NonTerminalElementToProbability>();
+		Set<NonTerminalElementToProbability>toReturnSuff = new HashSet<NonTerminalElementToProbability>();
 		int size = r1.length();
 		if (size>=3){
-			toReturnSuff = returnSuff(size,toReturnSuff,r1);
+			toReturnSuff = returnSuffixes(size,toReturnSuff,r1);
 		}
 		if (toReturnSuff.size()==0){
 			toReturnSuff = this.lexicalSuffixesLookUpMatrix.get("dummies");
@@ -327,7 +325,7 @@ public class ProbabilisticContextFreeGrammar{
 		return toReturnSuff.toArray(new NonTerminalElementToProbability[toReturnSuff.size()]);
 	}
 
-	private HashSet<NonTerminalElementToProbability> returnSuff(int size, HashSet<NonTerminalElementToProbability> toReturnSuff,String r1) {
+	private Set<NonTerminalElementToProbability> returnSuffixes(int size, Set<NonTerminalElementToProbability> toReturnSuff,String r1) {
 		String suffixe = r1.substring(size-3, size).toLowerCase();
 		if (toReturnSuff.size()==0 && this.lexicalSuffixesLookUpMatrix.containsKey(suffixe)){
 			this.lexicalSuffixesLookUpMatrix.get(suffixe);

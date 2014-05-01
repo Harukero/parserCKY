@@ -2,6 +2,7 @@ package parserCKY.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -15,8 +16,8 @@ public class ParserCKY {
 	private static NonTerminalElementToProbability [][][] chart;
 	private static NonTerminalElementToTree[][][] treeChart;
 	private static int span=2,begin=0,end,split;
-	private static HashMap<Integer,Double> aAjouter;
-	private static HashMap<Integer,Tree> mesArbres;
+	private static Map<Integer,Double> aAjouter;
+	private static Map<Integer,Tree> mesArbres;
 	
 	private ParserCKY(){
 		
@@ -26,22 +27,22 @@ public class ParserCKY {
 	 * Cette méthode prend une phrase en imput et vérifie si cette phrase peut être<br>
 	 * engendrée par la grammaire du parser, si c'est le cas, elle renvera le meilleur arbre d'analyse possible
 	 * Sinon elle renvera un arbre dont la racine est CAN'T_BE_PARSED
-	 * @param sent une phrase quelqu'on dont on veut avoir l'arbre syntaxique
+	 * @param sentence une phrase quelqu'on dont on veut avoir l'arbre syntaxique
 	 * @return le meilleur arbre possible (le plus probable)
 	 */
-	public static Tree parse(String sent,ProbabilisticContextFreeGrammar gramm){
-		String[] words = sent.split(" ");
-		int nbMots = words.length;
-		buildCharts(nbMots,words,gramm);
-		for (span=2;span <= nbMots;span++){ // nombre de mots que gère la case courante
-			for (begin=0 ;begin <= nbMots-span;begin++){
+	public static Tree parse(String sentence,ProbabilisticContextFreeGrammar grammar){
+		String[] words = sentence.split(" ");
+		int numberOfWords = words.length;
+		buildCharts(numberOfWords,words,grammar);
+		for (span=2;span <= numberOfWords;span++){ // nombre de mots que gère la case courante
+			for (begin=0 ;begin <= numberOfWords-span;begin++){
 				end = begin+span;
 				aAjouter = new HashMap<Integer,Double>();
 				mesArbres = new HashMap<Integer,Tree>();
 				for (split=begin+1;split<end;split++){
 					for (int i=0;i<chart[begin][split].length;i++){ // pour tout B possible
 						for (int j = 0 ; j<chart[split][end].length;j++){ // pour tout C possible
-							getBestA(gramm,i,j);
+							getBestA(grammar,i,j);
 						}
 					}
 					chart[begin][end] = toPaireArray(aAjouter);
@@ -49,36 +50,36 @@ public class ParserCKY {
 				}
 			}
 		}
-		return getBestTree(chart[0][nbMots],treeChart[0][nbMots],gramm);
+		return getBestTree(chart[0][numberOfWords],treeChart[0][numberOfWords],grammar);
 	}
 
-	private static void getBestA(ProbabilisticContextFreeGrammar gramm,int i,int j) {
+	private static void getBestA(ProbabilisticContextFreeGrammar grammar,int i,int j) {
 		NonTerminalElementToProbability b = chart[begin][split][i]; // récupération de B et sa probabilité
 		NonTerminalElementToProbability c = chart[split][end][j]; // récupération de C et sa probabilité
-		NonTerminalElementToProbability[] toAdd = gramm.lookUp(b.getL(), c.getL());
+		NonTerminalElementToProbability[] toAdd = grammar.lookUp(b.getLeftElement(), c.getLeftElement());
 		// pour chaque A tel que A --> B C est dans la grammaire
 		for (int k =0; k<toAdd.length;k++){ 
 			NonTerminalElementToProbability a = toAdd[k];
 			Double prob;
-			Tree monArbre = new Tree(a.getL().toString()); // arbre de racine A
-			monArbre.addChild(treeChart[begin][split][i].getR()); // ajout du fils gauche
-			monArbre.addChild(treeChart[split][end][j].getR()); // ajout du fils droit
-			prob = a.getR()+b.getR()+c.getR();
+			Tree monArbre = new Tree(a.getLeftElement().toString()); // arbre de racine A
+			monArbre.addChild(treeChart[begin][split][i].getRightElement()); // ajout du fils gauche
+			monArbre.addChild(treeChart[split][end][j].getRightElement()); // ajout du fils droit
+			prob = a.getRightElement()+b.getRightElement()+c.getRightElement();
 			//assert !prob.isNaN();
-			if (aAjouter.containsKey(a.getL())){ 
-				if (aAjouter.get(a.getL()).compareTo(prob)<=0){
-					aAjouter.put(a.getL() , prob);
-					mesArbres.put(a.getL(), monArbre);
+			if (aAjouter.containsKey(a.getLeftElement())){ 
+				if (aAjouter.get(a.getLeftElement()).compareTo(prob)<=0){
+					aAjouter.put(a.getLeftElement() , prob);
+					mesArbres.put(a.getLeftElement(), monArbre);
 				}
 			}
 			else{
-				aAjouter.put(a.getL(), prob);
-				mesArbres.put(a.getL(), monArbre); 
+				aAjouter.put(a.getLeftElement(), prob);
+				mesArbres.put(a.getLeftElement(), monArbre); 
 			}
 		}		
 	}
 
-	private static void buildCharts(int nbMots,String[]words,ProbabilisticContextFreeGrammar gramm) {
+	private static void buildCharts(int nbMots,String[]words,ProbabilisticContextFreeGrammar grammar) {
 		chart = new NonTerminalElementToProbability [nbMots][][];
 		treeChart = new NonTerminalElementToTree[nbMots][][];
 		for (int i=0;i<nbMots;i++){ // création des matrices de paires et d'arbres
@@ -90,11 +91,11 @@ public class ParserCKY {
 			}
 		}
 		for (int i=0;i<nbMots;i++){ // remplissage des cases de lexique
-			chart[i][i+1] = gramm.lookUp(words[i]);
+			chart[i][i+1] = grammar.lookUp(words[i]);
 			ArrayList<NonTerminalElementToTree> arbresL = new ArrayList<NonTerminalElementToTree>();
 			for (NonTerminalElementToProbability paire : chart[i][i+1])
 				// remplissage des feuilles de l'arbre de parsing
-				arbresL.add(new NonTerminalElementToTree(paire.getL(),new Tree(paire.getL().toString()+" "+words[i])));
+				arbresL.add(new NonTerminalElementToTree(paire.getLeftElement(),new Tree(paire.getLeftElement().toString()+" "+words[i])));
 			treeChart[i][i+1] = arbresL.toArray(new NonTerminalElementToTree[arbresL.size()]);
 		}
 	}
@@ -106,12 +107,12 @@ public class ParserCKY {
 		String axiome = gramm.getAxiome();
 		for (int i=0 ; i<probPossibles.length;i++){ // ici on vérifie que la phrase d'input est dans le langage 
 			NonTerminalElementToProbability maPaire = probPossibles[i];
-			String categoryPaire = gramm.getNtPos().get(maPaire.getL()).split("\\*")[0];
+			String categoryPaire = gramm.getNtPos().get(maPaire.getLeftElement()).split("\\*")[0];
 			if (categoryPaire.equals(axiome)){ // si c'est le cas, on renvoie l'arbre de parsing
 				found = true;
-				if (proba == null || maPaire.getR()>proba){
-					toReturn = new Tree("",arbresPossibles[i].getR());
-					proba = maPaire.getR();
+				if (proba == null || maPaire.getRightElement()>proba){
+					toReturn = new Tree("",arbresPossibles[i].getRightElement());
+					proba = maPaire.getRightElement();
 				}
 			}
 		}
@@ -142,7 +143,7 @@ public class ParserCKY {
 	}
 
 	// prend une table de hashage et renvoie le tableau des PaireLPoids correspondantes aux Entry
-	private static NonTerminalElementToProbability[] toPaireArray(HashMap<Integer, Double> aAjouter) {
+	private static NonTerminalElementToProbability[] toPaireArray(Map<Integer, Double> aAjouter) {
 		Set<Entry<Integer,Double>> mesEntries = aAjouter.entrySet();
 		NonTerminalElementToProbability [] toReturn = new NonTerminalElementToProbability[mesEntries.size()];
 		int i = 0;
@@ -153,7 +154,7 @@ public class ParserCKY {
 	}
 
 	// prend une table de hashage et renvoie le tableau des PaireLPoids correspondantes aux Entry
-	private static NonTerminalElementToTree[] toPaireLTArray(HashMap<Integer, Tree> aAjouter) {
+	private static NonTerminalElementToTree[] toPaireLTArray(Map<Integer, Tree> aAjouter) {
 		Set<Entry<Integer,Tree>> mesEntries = aAjouter.entrySet();
 		NonTerminalElementToTree [] toReturn = new NonTerminalElementToTree[mesEntries.size()];
 		int i = 0;

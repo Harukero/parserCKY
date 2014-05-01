@@ -16,11 +16,11 @@ public interface Paire <L,R>{
 	 * Permet de récupérer le premier élément de la Paire
 	 * @return l'élément de gauche
 	 */
-	public L getL();
+	public L getLeftElement();
 
 	/**
 	 * Permet de récupérer le second élément de la Paire
 	 * @return l'élément de droite
 	 */
-	public R getR();
+	public R getRightElement();
 }

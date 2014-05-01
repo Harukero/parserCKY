@@ -180,8 +180,9 @@ public class Tree {
 		LinkedList<Tree> newFils = new LinkedList<Tree>();
 		boolean childContainsDollar = false;
 		if (!this.is_leaf() && this.label.contains("*")){ //cas d'une production unaire
-			String newLabel = this.label.substring(0, this.label.indexOf("*")); // le nouveau label est l'ensemble des caractères jusqu'à la première étoile exclue
-			Tree nouvelArbre = new Tree (this.label.substring(this.label.indexOf("*")+1));
+			int starIndex = this.label.indexOf("*");
+			String newLabel = this.label.substring(0, starIndex); // le nouveau label est l'ensemble des caractères jusqu'à la première étoile exclue
+			Tree nouvelArbre = new Tree (this.label.substring(starIndex+1));
 			this.label = newLabel;
 			nouvelArbre.children = this.children;
 			nouvelArbre.unBinarise();
@@ -219,11 +220,11 @@ public class Tree {
 	/**
 	 * Méthode de classe. Prend en argument une chaîne de caractères représentant un arbre<br>
 	 * d'un treebank et renvoi l'arbre correspondant à cette chaîne
-	 * @param treebank (X (YYYY y) (ZZZ z))
+	 * @param treebankFormatTree (X (YYYY y) (ZZZ z))
 	 * @return un arbre 
 	 */
-	public static Tree string2Tree(String treebank){
-		char [] treebankSplit = treebank.toCharArray();
+	public static Tree stringToTree(String treebankFormatTree){
+		char [] treebankSplit = treebankFormatTree.toCharArray();
 		Stack<Tree> pileDArbres = new Stack<Tree>();
 		String label = "";
 		for (int i = 0;i<treebankSplit.length;i++){
@@ -259,34 +260,34 @@ public class Tree {
 		return null; // en cas d'échec (mauvais fichier)
 	}
 
-	public static ArrayList<TokenDependancy> list2tokenDep (ArrayList<String> list) {
-		ArrayList<TokenDependancy> tableau = new ArrayList<TokenDependancy> ();		
+	public static List<TokenDependancy> list2tokenDep (List<String> list) {
+		List<TokenDependancy> tableau = new ArrayList<TokenDependancy> ();		
 		for (String lst : list) {
 			tableau.add(new TokenDependancy(lst));
 		}
 		return tableau;
 	}
 
-	public static Tree tokenList2Tree (ArrayList<String> mesLignes) {
-		ArrayList<TokenDependancy> mesTokenDep = list2tokenDep(mesLignes);
+	public static Tree tokenList2Tree (List<String> mesLignes) {
+		List<TokenDependancy> mesTokenDep = list2tokenDep(mesLignes);
 		Tree arbre = new Tree ("");
 		TokenDependancy racine = racine(mesTokenDep);
-		arbre.addChild(new Tree (racine.getCat() + " " + racine.getToken()));
-		arbre.children.get(0).buildTree(racine.getIndice(), mesTokenDep);
+		arbre.addChild(new Tree (racine.getCategory() + " " + racine.getToken()));
+		arbre.children.get(0).buildTree(racine.getIndex(), mesTokenDep);
 		return arbre;
 	}
 
-	private void buildTree (int indice, ArrayList<TokenDependancy> list) {
+	private void buildTree (int indice, List<TokenDependancy> list) {
 		boolean on_a_ajoute = false;
-		ArrayList<TokenDependancy> children = getChildren(indice,list);
+		List<TokenDependancy> children = getChildren(indice,list);
 		for (Iterator<TokenDependancy> lines = children.iterator();lines.hasNext();) {
 			TokenDependancy line = lines.next();
-			if (line.getIndice() >= indice && on_a_ajoute == false) { 	// si l'indice qu'on veut trouver est superieur a celui du pere, on ajoute avant cette indice.
+			if (line.getIndex() >= indice && on_a_ajoute == false) { 	// si l'indice qu'on veut trouver est superieur a celui du pere, on ajoute avant cette indice.
 				on_a_ajoute = true;
 				this.headed();
 			}
-			Tree fils = new Tree(line.getCat() + " " + line.getToken());
-			fils.buildTree(line.getIndice(), list);
+			Tree fils = new Tree(line.getCategory() + " " + line.getToken());
+			fils.buildTree(line.getIndex(), list);
 			this.addChild(fils);
 			if (!lines.hasNext() && on_a_ajoute == false){
 				on_a_ajoute = true;
@@ -302,19 +303,19 @@ public class Tree {
 		this.addChild(new Tree(newlabel)); // on ajoute V est aux fils.
 	}
 
-	private static TokenDependancy racine (ArrayList<TokenDependancy> list) {
+	private static TokenDependancy racine (List<TokenDependancy> list) {
 		for (TokenDependancy line : list) {
-			if (line.getIndicePere() == 0) {
+			if (line.getFatherIndex() == 0) {
 				return line;
 			}
 		}
 		return null;
 	}
 
-	private static ArrayList<TokenDependancy> getChildren (int indice, ArrayList<TokenDependancy> list) {
-		ArrayList<TokenDependancy> children = new ArrayList<TokenDependancy> ();
+	private static List<TokenDependancy> getChildren (int indice, List<TokenDependancy> list) {
+		List<TokenDependancy> children = new ArrayList<TokenDependancy> ();
 		for (TokenDependancy line : list) {
-			if (line.getIndicePere() == indice) {
+			if (line.getFatherIndex() == indice) {
 				children.add(line);
 			}
 		}

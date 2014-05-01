@@ -8,18 +8,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import parserCKY.tree.Tree;
 
 public class TreebankDependancy extends Treebank implements Iterable<Tree>{
 	
-	private ArrayList<Tree> treebankDep = new ArrayList<Tree> ();
+	private List<Tree> treebankDep = new ArrayList<Tree> ();
 	
 	public TreebankDependancy (String filename) {
 		try {
 			FileReader fr = new FileReader(new File(filename));
 			BufferedReader breader=new BufferedReader(fr);
-			ArrayList<String> mesLignes = new ArrayList<String> ();
+			List<String> mesLignes = new ArrayList<String> ();
 			String line;
 			while ((line = breader.readLine()) != null) {
 				if (!line.equals("")) {
@@ -43,10 +44,10 @@ public class TreebankDependancy extends Treebank implements Iterable<Tree>{
 		super();
 	}
 	
-	public void exportTreeBank (String nomFic){
+	public void exportTreeBank (String filePath){
 		// Attention ! Cette méthode écrit à la suite du fichier mis en argument, pas par dessus !
 		try{
-			FileWriter fw = new FileWriter(nomFic, true);
+			FileWriter fw = new FileWriter(filePath, true);
 			BufferedWriter output = new BufferedWriter(fw);
 			for (Tree t : this)
 				output.write(t.toString()+"\n");

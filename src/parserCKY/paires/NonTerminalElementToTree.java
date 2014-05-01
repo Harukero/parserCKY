@@ -49,11 +49,11 @@ public class NonTerminalElementToTree  implements Paire<Integer, Tree>, Comparab
 		return true;
 	}
 
-	public Integer getL() {
+	public Integer getLeftElement() {
 		return this.nonTerminalElement;
 	}
 
-	public Tree getR() {
+	public Tree getRightElement() {
 		return this.tree;
 	}
 

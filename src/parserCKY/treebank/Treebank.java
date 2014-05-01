@@ -40,7 +40,7 @@ public class Treebank implements Iterable<Tree>{
 			BufferedReader breader=new BufferedReader(fr);
 			String line;
 			while ((line=breader.readLine())!=null){
-				this.treebank.add(Tree.string2Tree(line));
+				this.treebank.add(Tree.stringToTree(line));
 			}
 			breader.close();
 		}
@@ -69,8 +69,8 @@ public class Treebank implements Iterable<Tree>{
 	 * Cette méthode permet de binariser le treebank entier, selon un certain degré de markovisation.
 	 */
 	public void binariseTreeBank(){
-		for (Tree t : this){
-			t.binarise(this.markovDegree);
+		for (Tree tree : this){
+			tree.binarise(this.markovDegree);
 		}
 	}
 
@@ -78,14 +78,15 @@ public class Treebank implements Iterable<Tree>{
 	 * Cette méthode permet de débinariser le treebank entier.
 	 */
 	public void unBinariseTreeBank(){
-		for (Tree t : this)
-			t.unBinarise();
+		for (Tree tree : this){
+			tree.unBinarise();
+		}
 	}
 
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		for (Tree t : this){
-			buffer.append(t.toString()+"\n");
+		for (Tree tree : this){
+			buffer.append(tree.toString()+"\n");
 		}
 		return buffer.toString();
 	}
@@ -100,8 +101,9 @@ public class Treebank implements Iterable<Tree>{
 		try{
 			FileWriter fw = new FileWriter(nomFic, true);
 			BufferedWriter output = new BufferedWriter(fw);
-			for (Tree t : this)
-				output.write(t.toString()+"\n");
+			for (Tree tree : this){
+				output.write(tree.toString()+"\n");
+			}
 			output.flush();
 			output.close();
 			System.out.println("fichier créé");

@@ -15,11 +15,11 @@ public class NonTerminalElementToProbability  implements Paire<Integer, Double>,
 	}
 
 
-	public Integer getL() {
+	public Integer getLeftElement() {
 		return this.nonTerminalElementId;
 	}
 
-	public Double getR() {
+	public Double getRightElement() {
 		return this.probability;
 	}
 

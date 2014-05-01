@@ -2,22 +2,22 @@ package parserCKY.treebank;
 
 public class TokenDependancy {
 
-	private int indice, indicePere ;
-	private String token, cat ;
+	private int index, fatherIndex ;
+	private String token, category ;
 
 	public TokenDependancy (int indice, String token, String cat, int indicePere) {
-		this.indice = indice;
+		this.index = indice;
 		this.token = token;
-		this.cat = cat;
-		this.indicePere = indicePere;
+		this.category = cat;
+		this.fatherIndex = indicePere;
 	}
 
 	public TokenDependancy (String ligne) {
 		String[] tokenDep = ligne.split("\\t");
 		this.token = tokenDep[1];
-		this.cat = tokenDep[4];
-		this.indice = Integer.valueOf(tokenDep[0]);
-		this.indicePere = Integer.valueOf(tokenDep[6]);					
+		this.category = tokenDep[4];
+		this.index = Integer.valueOf(tokenDep[0]);
+		this.fatherIndex = Integer.valueOf(tokenDep[6]);					
 	}
 
 	public String getToken() {
@@ -28,28 +28,28 @@ public class TokenDependancy {
 		this.token = token;
 	}
 
-	public int getIndicePere() {
-		return indicePere;
+	public int getFatherIndex() {
+		return fatherIndex;
 	}
 
-	public void setIndicePere(int indicePere) {
-		this.indicePere = indicePere;
+	public void setFatherIndex(int indicePere) {
+		this.fatherIndex = indicePere;
 	}
 
-	public String getCat() {
-		return cat;
+	public String getCategory() {
+		return category;
 	}
 
-	public void setCat(String cat) {
-		this.cat = cat;
+	public void setCategory(String cat) {
+		this.category = cat;
 	}
 
-	public int getIndice() {
-		return indice;
+	public int getIndex() {
+		return index;
 	}
 
-	public void setIndice(int indice) {
-		this.indice = indice;
+	public void setIndex(int indice) {
+		this.index = indice;
 	}
 
 
