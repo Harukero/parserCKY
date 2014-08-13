@@ -2,7 +2,6 @@ package parserCKY.tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -94,6 +93,17 @@ public class Tree {
 		this.label = label;
 	}
 
+	public Tree getChildAt(int position) {
+		if (position < 0 || children.size() == 0 || children.size() < position) {
+			return null;
+		}
+		return children.get(position);
+	}
+
+	public String getLabelFromChildAt(int position) {
+		return getChildAt(position) == null ? null : getChildAt(position).label;
+	}
+
 	/**
 	 * Constructeur d'un Tree, construit un arbre en lui ajoutant des fils
 	 * 
@@ -115,12 +125,12 @@ public class Tree {
 	 * 
 	 * @return true si le Tree courant est une feuille, false sinon
 	 */
-	public boolean is_leaf() {
+	public boolean isLeaf() {
 		return children.isEmpty();
 	}
 
 	public String toString() {
-		if (is_leaf()) {
+		if (isLeaf()) {
 			return "(" + label + ")";
 		}
 		return "("
@@ -131,7 +141,7 @@ public class Tree {
 	}
 
 	public String toSentence() {
-		if (is_leaf()) {
+		if (isLeaf()) {
 			return label.split(" ")[1];
 		}
 		return children.stream().map(child -> child.toSentence())
@@ -160,7 +170,7 @@ public class Tree {
 			// treebank, qui est vide
 			children.get(0).binarise(i);
 		}
-		if (label.equals("") && size == 1) { // gestion des règles unaires
+		if (!label.equals("") && size == 1) { // gestion des règles unaires
 			label += "*" + children.get(0).label;
 			children = children.get(0).children;
 			binarise(i);
@@ -179,18 +189,18 @@ public class Tree {
 		List<Tree> newFils = new ArrayList<Tree>();
 		// on crée une liste des futurs nouveaux enfants (fils de gauche et faux
 		// fils)
-		newFils.add(children.get(0)); 
+		newFils.add(children.get(0));
 		// on ajoute le premier fils à cette liste
-		List<Tree> filsDuFauxFils = new ArrayList<Tree>(); 
+		List<Tree> filsDuFauxFils = new ArrayList<Tree>();
 		// on crée une liste pour les fils du Faux Fils
-		for (Tree t : (children.subList(1, size))) { 
+		for (Tree t : (children.subList(1, size))) {
 			// pour tous les autres fils (donc pas le premier)
-			filsDuFauxFils.add(t); 
+			filsDuFauxFils.add(t);
 			// on les ajoute aux fils du faux fils
 		}
 		String newNodeLabel = "";
 		if (degreMarkovisation >= 1)
-			newNodeLabel += Utils.getFirstPart(children.get(1).label) + "$"; 
+			newNodeLabel += Utils.getFirstPart(children.get(1).label) + "$";
 		// on crée ici le nom du Faux fils en récupérant que les non-terminaux
 		if (degreMarkovisation >= 2) {
 			newNodeLabel += Utils.getFirstPart(children.get(2).label) + "$";
@@ -207,13 +217,14 @@ public class Tree {
 	 * courant soit binarisé via la méthode "binarise" de cette classe
 	 */
 	public void unBinarise() {
-		LinkedList<Tree> newFils = new LinkedList<Tree>();
+		List<Tree> newFils = new ArrayList<Tree>();
 		boolean childContainsDollar = false;
-		if (!is_leaf() && label.contains("*")) { 
+		if (!isLeaf() && label.contains("*")) {
 			// cas d'une production unaire
 			int starIndex = label.indexOf("*");
-			String newLabel = label.substring(0, starIndex); 
-			// le nouveau label est l'ensemble des caractères jusqu'à la première étoile exclue
+			String newLabel = label.substring(0, starIndex);
+			// le nouveau label est l'ensemble des caractères jusqu'à la
+			// première étoile exclue
 			Tree nouvelArbre = new Tree(label.substring(starIndex + 1));
 			label = newLabel;
 			nouvelArbre.children = children;
@@ -221,31 +232,37 @@ public class Tree {
 			newFils.add(nouvelArbre);
 			this.children = newFils; // on met à jour la liste des fils de
 										// l'arbre courant
-		} else if (!label.equals("") && !is_leaf()
-				&& !label.contains("$")) { // si l'arbre courant n'est pas
-												// une feuille
+		} else if (!label.equals("") && !isLeaf() && !label.contains("$")) { // si
+																				// l'arbre
+																				// courant
+																				// n'est
+																				// pas
+																				// une
+																				// feuille
 			for (Tree child : children) { // on vérifie chacun de ses fils
-				if (child.label.indexOf("$") != -1 && !child.is_leaf()) { 
+				if (child.label.indexOf("$") != -1 && !child.isLeaf()) {
 					// si le fils contient une $
-					childContainsDollar = true; 
-					// on indique que l'arbre courant a au moins un fils avec une $
-					for (Tree son : child.children){
-						newFils.add(son); 
-					// on ajoute chacun des fils de ce fils aux futurs fils de l'arbre courant
+					childContainsDollar = true;
+					// on indique que l'arbre courant a au moins un fils avec
+					// une $
+					for (Tree son : child.children) {
+						newFils.add(son);
+						// on ajoute chacun des fils de ce fils aux futurs fils
+						// de l'arbre courant
 					}
-				}
-				else {
+				} else {
 					newFils.add(child); // sinon on conserve ce fils
 				}
 			}
-			children = newFils; // on met à jour la liste des fils de l'arbre courant
+			children = newFils; // on met à jour la liste des fils de l'arbre
+								// courant
 		}
-		if (is_leaf() && label.contains("*")) {
+		if (isLeaf() && label.contains("*")) {
 			// et on remet les productions unaires des feuilles si il y en avait
-			String newLabel = label.substring(0, label.indexOf("*")); 
-			// le nouveau label est l'ensemble des caractères jusqu'à la première *  exclue
-			Tree nouvelArbre = new Tree(label.substring(label
-					.indexOf("*") + 1));
+			String newLabel = label.substring(0, label.indexOf("*"));
+			// le nouveau label est l'ensemble des caractères jusqu'à la
+			// première * exclue
+			Tree nouvelArbre = new Tree(label.substring(label.indexOf("*") + 1));
 			label = newLabel;
 			nouvelArbre.unBinarise();
 			addChild(nouvelArbre);
@@ -253,9 +270,9 @@ public class Tree {
 			// dessous qu'on débinarise
 		if (childContainsDollar)
 			unBinarise(); // si on a fait au moins une modification, on
-								// recommence au même niveau
+							// recommence au même niveau
 		else {
-			for (Tree child : children) { 
+			for (Tree child : children) {
 				// sinon on débinarise tous les fils de l'arbre courant
 				child.unBinarise();
 			}
@@ -293,13 +310,13 @@ public class Tree {
 						if (treebankSplit[i] != '(' && treebankSplit[i] != ')') {
 							// ajout du caractère au label
 							label += treebankSplit[i];
-						} 
+						}
 						i++; // passer au caractère suivant
 					}
 				} // sortie du while : on a ajout à un noeud à la pile
 			if (treebankSplit[i] == ')') { // on est à la fin d'un niveau
 				// enlever l'élément du sommet de la pile
-				Tree monarbre = pileDArbres.pop(); 
+				Tree monarbre = pileDArbres.pop();
 				if (pileDArbres.size() > 0) {
 					pileDArbres.peek().addChild(monarbre);
 				} else {
@@ -333,8 +350,9 @@ public class Tree {
 		for (Iterator<TokenDependancy> lines = children.iterator(); lines
 				.hasNext();) {
 			TokenDependancy line = lines.next();
-			if (line.getIndex() >= indice && on_a_ajoute == false) { 
-				// si l'indice qu'on veut trouver est superieur a celui du pere, on ajoute avant cette indice.
+			if (line.getIndex() >= indice && on_a_ajoute == false) {
+				// si l'indice qu'on veut trouver est superieur a celui du pere,
+				// on ajoute avant cette indice.
 				on_a_ajoute = true;
 				headed();
 			}
@@ -350,7 +368,8 @@ public class Tree {
 
 	private void headed() {
 		String newlabel = label; // on cree un nouveau label pour le pere
-		label = Utils.getFirstPartBefore(label, ' '); // on recupere le CAT du pere
+		label = Utils.getFirstPartBefore(label, ' '); // on recupere le CAT du
+														// pere
 		label = label + "%"; // puis ajouter un %
 		addChild(new Tree(newlabel)); // on ajoute V est aux fils.
 	}
@@ -376,10 +395,11 @@ public class Tree {
 	}
 
 	public static void main(String[] args) {
-		Tree t = stringToTree(
-				"( (SENT (ADV Ensuite) (PONCT ,) (VN (V fut) (VPP installée)) (NP-SUJ (DET une) (ADJ autre) (NC forge)) (PP-MOD (P à) (NP (DET la) (NPP Vacquerie))) (PONCT ,) (PP-MOD (P à) (NP (DET l') (NC emplacement) (ADV aujourd'_hui) (PP (P de) (NP (NPP Cora))))) (PONCT .)))");
+		Tree t = stringToTree("( (SENT (NP (NC M.) (NPP Teulade)) (VN (V peut)) (PONCT ,) (ADV à_juste_titre) (PONCT ,) (VPinf (VN (VINF considérer)) (Ssub (CS que) (PONCT \") (NP (DET la) (NC crédibilité) (PP (P+D du) (NP (NC système) (AP (ADJ conventionnel))))) (VN (V est)) (ADV en_jeu) (PONCT \"))) (PONCT .)))");
 		System.out.println(t);
 		System.out.println(t.toSentence());
+		t.binarise(1);
+		System.out.println(t);
 	}
 
 }

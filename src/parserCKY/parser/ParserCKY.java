@@ -169,7 +169,7 @@ public class ParserCKY {
 
 	private static void buildTree(Tree tree,
 			ProbabilisticContextFreeGrammar gramm) {
-		if (tree.is_leaf()) {
+		if (tree.isLeaf()) {
 			int spacePos = tree.getLabel().indexOf(' ');
 			Integer key = Integer.valueOf(tree.getLabel()
 					.substring(0, spacePos));
