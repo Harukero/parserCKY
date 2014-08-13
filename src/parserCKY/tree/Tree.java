@@ -28,10 +28,8 @@ public class Tree {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((this.children == null) ? 0 : this.children.hashCode());
-		result = prime * result
-				+ ((this.label == null) ? 0 : this.label.hashCode());
+		result = prime * result + ((this.children == null) ? 0 : this.children.hashCode());
+		result = prime * result + ((this.label == null) ? 0 : this.label.hashCode());
 		return result;
 	}
 
@@ -79,10 +77,8 @@ public class Tree {
 		this.children = children;
 	}
 
-	private List<Tree> children = new ArrayList<Tree>(); // la liste des enfants
-															// qui partent de la
-															// racine de notre
-															// arbre
+	// la liste des enfants qui partent de la racine de notre arbre
+	private List<Tree> children = new ArrayList<Tree>();
 
 	/**
 	 * Constructeur d'un Tree, construit un arbre sans fils (une feuille)
@@ -133,19 +129,15 @@ public class Tree {
 		if (isLeaf()) {
 			return "(" + label + ")";
 		}
-		return "("
-				+ label
-				+ " "
-				+ children.stream().map(child -> child.toString())
-						.collect(Collectors.joining(" ")) + ")";
+		return "(" + label + " " + children.stream().map(child -> child.toString()).collect(Collectors.joining(" "))
+				+ ")";
 	}
 
 	public String toSentence() {
 		if (isLeaf()) {
 			return label.split(" ")[1];
 		}
-		return children.stream().map(child -> child.toSentence())
-				.collect(Collectors.joining(" "));
+		return children.stream().map(child -> child.toSentence()).collect(Collectors.joining(" "));
 	}
 
 	/**
@@ -160,9 +152,7 @@ public class Tree {
 	/**
 	 * Méthode d'instance renvoyant l'arbre courant sous forme d'arbre binarisé
 	 * 
-	 * @param i
-	 *            le nombre d'éléments à conserver quand on crée un nouveau
-	 *            noeud dans l'arbre pour la markovisation
+	 * @param i le nombre d'éléments à conserver quand on crée un nouveau noeud dans l'arbre pour la markovisation
 	 */
 	public void binarise(int i) {
 		int size = children.size();
@@ -187,8 +177,7 @@ public class Tree {
 
 	private void markovisation(int degreMarkovisation, int size) {
 		List<Tree> newFils = new ArrayList<Tree>();
-		// on crée une liste des futurs nouveaux enfants (fils de gauche et faux
-		// fils)
+		// on crée une liste des futurs nouveaux enfants (fils de gauche et faux fils)
 		newFils.add(children.get(0));
 		// on ajoute le premier fils à cette liste
 		List<Tree> filsDuFauxFils = new ArrayList<Tree>();
@@ -230,47 +219,34 @@ public class Tree {
 			nouvelArbre.children = children;
 			nouvelArbre.unBinarise();
 			newFils.add(nouvelArbre);
-			this.children = newFils; // on met à jour la liste des fils de
-										// l'arbre courant
-		} else if (!label.equals("") && !isLeaf() && !label.contains("$")) { // si
-																				// l'arbre
-																				// courant
-																				// n'est
-																				// pas
-																				// une
-																				// feuille
+			this.children = newFils; // on met à jour la liste des fils de l'arbre courant
+		} else if (!label.equals("") && !isLeaf() && !label.contains("$")) { // si l'arbre  courant n'est pas une feuille
 			for (Tree child : children) { // on vérifie chacun de ses fils
 				if (child.label.indexOf("$") != -1 && !child.isLeaf()) {
 					// si le fils contient une $
 					childContainsDollar = true;
-					// on indique que l'arbre courant a au moins un fils avec
-					// une $
+					// on indique que l'arbre courant a au moins un fils avec une $
 					for (Tree son : child.children) {
 						newFils.add(son);
-						// on ajoute chacun des fils de ce fils aux futurs fils
-						// de l'arbre courant
+						// on ajoute chacun des fils de ce fils aux futurs fils de l'arbre courant
 					}
 				} else {
 					newFils.add(child); // sinon on conserve ce fils
 				}
 			}
-			children = newFils; // on met à jour la liste des fils de l'arbre
-								// courant
+			children = newFils; // on met à jour la liste des fils de l'arbre courant
 		}
 		if (isLeaf() && label.contains("*")) {
 			// et on remet les productions unaires des feuilles si il y en avait
 			String newLabel = label.substring(0, label.indexOf("*"));
-			// le nouveau label est l'ensemble des caractères jusqu'à la
-			// première * exclue
+			// le nouveau label est l'ensemble des caractères jusqu'à la première * exclue
 			Tree nouvelArbre = new Tree(label.substring(label.indexOf("*") + 1));
 			label = newLabel;
 			nouvelArbre.unBinarise();
 			addChild(nouvelArbre);
-		}// si on est une feuille contenant une * : on crée un nouveau niveau en
-			// dessous qu'on débinarise
+		}// si on est une feuille contenant une * : on crée un nouveau niveau en dessous qu'on débinarise
 		if (childContainsDollar)
-			unBinarise(); // si on a fait au moins une modification, on
-							// recommence au même niveau
+			unBinarise(); // si on a fait au moins une modification, on recommence au même niveau
 		else {
 			for (Tree child : children) {
 				// sinon on débinarise tous les fils de l'arbre courant
@@ -283,11 +259,9 @@ public class Tree {
 
 	/**
 	 * Méthode de classe. Prend en argument une chaîne de caractères
-	 * représentant un arbre<br>
-	 * d'un treebank et renvoi l'arbre correspondant à cette chaîne
+	 * représentant un arbre<br> d'un treebank et renvoi l'arbre correspondant à cette chaîne
 	 * 
-	 * @param treebankFormatTree
-	 *            (X (YYYY y) (ZZZ z))
+	 * @param treebankFormatTree (X (YYYY y) (ZZZ z))
 	 * @return un arbre
 	 */
 	public static Tree stringToTree(String treebankFormatTree) {
@@ -314,8 +288,7 @@ public class Tree {
 						i++; // passer au caractère suivant
 					}
 				} // sortie du while : on a ajout à un noeud à la pile
-			if (treebankSplit[i] == ')') { // on est à la fin d'un niveau
-				// enlever l'élément du sommet de la pile
+			if (treebankSplit[i] == ')') { // on est à la fin d'un niveau enlever l'élément du sommet de la pile
 				Tree monarbre = pileDArbres.pop();
 				if (pileDArbres.size() > 0) {
 					pileDArbres.peek().addChild(monarbre);
@@ -347,8 +320,7 @@ public class Tree {
 	private void buildTree(int indice, List<TokenDependancy> list) {
 		boolean on_a_ajoute = false;
 		List<TokenDependancy> children = getChildren(indice, list);
-		for (Iterator<TokenDependancy> lines = children.iterator(); lines
-				.hasNext();) {
+		for (Iterator<TokenDependancy> lines = children.iterator(); lines.hasNext();) {
 			TokenDependancy line = lines.next();
 			if (line.getIndex() >= indice && on_a_ajoute == false) {
 				// si l'indice qu'on veut trouver est superieur a celui du pere,
@@ -368,8 +340,7 @@ public class Tree {
 
 	private void headed() {
 		String newlabel = label; // on cree un nouveau label pour le pere
-		label = Utils.getFirstPartBefore(label, ' '); // on recupere le CAT du
-														// pere
+		label = Utils.getFirstPartBefore(label, ' '); // on recupere le CAT du pere
 		label = label + "%"; // puis ajouter un %
 		addChild(new Tree(newlabel)); // on ajoute V est aux fils.
 	}
@@ -383,8 +354,7 @@ public class Tree {
 		return null;
 	}
 
-	private static List<TokenDependancy> getChildren(int indice,
-			List<TokenDependancy> list) {
+	private static List<TokenDependancy> getChildren(int indice, List<TokenDependancy> list) {
 		List<TokenDependancy> children = new ArrayList<TokenDependancy>();
 		for (TokenDependancy line : list) {
 			if (line.getFatherIndex() == indice) {

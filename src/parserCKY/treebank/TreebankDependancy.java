@@ -43,8 +43,7 @@ public class TreebankDependancy extends Treebank implements Iterable<Tree> {
 	}
 
 	public void exportTreeBank(String filePath) {
-		// Attention ! Cette méthode écrit à la suite du fichier mis en
-		// argument, pas par dessus !
+		// Attention ! Cette méthode écrit à la suite du fichier mis en argument, pas par dessus !
 		try {
 			FileWriter fw = new FileWriter(filePath, true);
 			BufferedWriter output = new BufferedWriter(fw);

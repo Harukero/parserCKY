@@ -1,32 +1,32 @@
 package parserCKY.tree;
 
-public class BinaryTree <T> {
-	
+public class BinaryTree<T> {
+
 	private T label;
 
 	private BinaryTree<T> father;
 	private BinaryTree<T> left;
 	private BinaryTree<T> right;
-	
+
 	public BinaryTree(T currentLabel) {
 		this(currentLabel, null);
 	}
-	
+
 	public BinaryTree(T currentLabel, BinaryTree<T> currentFather) {
 		this(currentLabel, currentFather, null);
 	}
-	
+
 	public BinaryTree(T currentLabel, BinaryTree<T> currentFather, BinaryTree<T> leftChild) {
 		this(currentLabel, currentFather, leftChild, null);
 	}
-	
+
 	public BinaryTree(T currentLabel, BinaryTree<T> currentFather, BinaryTree<T> leftChild, BinaryTree<T> rightChild) {
 		label = currentLabel;
 		father = currentFather;
 		left = leftChild;
 		right = rightChild;
 	}
-	
+
 	T getLabel() {
 		return label;
 	}
@@ -60,33 +60,30 @@ public class BinaryTree <T> {
 	}
 
 	public boolean isRoot() {
-		return father==null;
+		return father == null;
 	}
-	
+
 	public boolean isLeaf() {
-		return left==null && right==null;
+		return left == null && right == null;
 	}
-	
+
 	public BinaryTree<T> cutLeft() {
 		BinaryTree<T> elementCut = left;
 		left = null;
 		return elementCut;
 	}
-	
+
 	public BinaryTree<T> cutRight() {
 		BinaryTree<T> elementCut = right;
 		right = null;
 		return elementCut;
 	}
-	
+
 	public String toRepresentation() {
 		if (isLeaf()) {
 			return "(" + label.toString() + ")";
 		}
-		return "("
-				+ label.toString()
-				+ " "
-				+ left.toRepresentation()+ " " +right.toRepresentation()+ ")";
+		return "(" + label.toString() + " " + left.toRepresentation() + " " + right.toRepresentation() + ")";
 	}
-	
+
 }

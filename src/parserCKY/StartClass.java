@@ -14,32 +14,39 @@ import parserCKY.treebank.TreebankDependancy;
 
 public class StartClass {
 
+	private static final String HELP = "--help";
+	private static final String PARSE = "--parse";
+	private static final String DEP = "--dep";
+	private static final String PARSE_DOC = "--parseDoc";
+
 	public static void main(String[] args) throws IOException {
 		int nb_args = args.length;
 		if (args.length == 0) {
 			usage();
 			System.exit(0);
 		}
-		if (args[0].equals("--help")) {
-			usage();
-			System.exit(0);
+		switch (args[0]) {
+			case HELP:
+				usage();
+				break;
+			case PARSE:
+				if (nb_args == 2) {
+					parse(args[1], false);
+				} else if (nb_args == 3 && args[2].equals(DEP)) {
+					parse(args[1], true);
+				}
+				break;
+			case PARSE_DOC:
+				if (nb_args == 4) {
+					parseDocument(args[1], args[2], args[3], false);
+				} else if (nb_args == 5 && args[4].equals(DEP)) {
+					parseDocument(args[1], args[2], args[3], true);
+				}
+				break;
+			default:
+				usage();
+				break;
 		}
-		if (args[0].equals("--parse")) {
-			if (nb_args == 2)
-				parse(args[1], false);
-			else if (nb_args == 3 && args[2].equals("--dep"))
-				parse(args[1], true);
-		} else if (args[0].equals("--parseDoc")) {
-			if (nb_args == 4)
-				parseDocument(args[1], args[2], args[3], false);
-			else if (nb_args == 5 && args[4].equals("--dep"))
-				parseDocument(args[1], args[2], args[3], true);
-		} else {
-			usage();
-			System.exit(0);
-		}
-
-		// test(args[0],args[1],args[2],2,false);
 	}
 
 	private static void usage() {
@@ -60,23 +67,19 @@ public class StartClass {
 	 * elle est dans le langage<br>
 	 * engendré par la grammaire extraite du treebank
 	 * 
-	 * @param treebank
-	 *            le nom d'un fichier contenant un treebank arboré
-	 * @param inFilename
-	 *            un nom de fichier de test avec une phrase par ligne
-	 * @param outFilename
-	 *            un nom de fichier où exporter le résultat
+	 * @param treebank le nom d'un fichier contenant un treebank arboré
+	 * @param inFilename un nom de fichier de test avec une phrase par ligne
+	 * @param outFilename un nom de fichier où exporter le résultat
 	 * @throws IOException
 	 */
-	public static void parseDocument(String treebank, String inFilename,
-			String outFilename, boolean dep) throws IOException {
+	public static void parseDocument(String treebank, String inFilename, String outFilename, boolean dep)
+			throws IOException {
 		Treebank tb;
 		if (!dep)
 			tb = new Treebank(treebank, 2);
 		else
 			tb = new TreebankDependancy(treebank);
-		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(
-				tb);
+		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		FileReader fr = new FileReader(new File(inFilename));
 		BufferedReader breader = new BufferedReader(fr);
 		String line;
@@ -115,8 +118,7 @@ public class StartClass {
 		} else {
 			tb = new TreebankDependancy(treebank);
 		}
-		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(
-				tb);
+		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		String sentence = " ";
 		Scanner sc = new Scanner(System.in);
 		System.out.println("prêt à tenter de parser votre phrase !");

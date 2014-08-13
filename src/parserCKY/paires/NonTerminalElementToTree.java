@@ -2,14 +2,13 @@ package parserCKY.paires;
 
 import parserCKY.tree.Tree;
 
-public class NonTerminalElementToTree implements Paire<Integer, Tree>,
-		Comparable<NonTerminalElementToTree> {
+public class NonTerminalElementToTree implements Paire<Integer, Tree>, Comparable<NonTerminalElementToTree> {
 
 	private Integer nonTerminalElement;
 	private Tree tree;
 
 	public NonTerminalElementToTree(Integer nt, Tree tree) {
-		this.nonTerminalElement = nt;
+		nonTerminalElement = nt;
 		this.tree = tree;
 	}
 
@@ -21,12 +20,8 @@ public class NonTerminalElementToTree implements Paire<Integer, Tree>,
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((this.nonTerminalElement == null) ? 0
-						: this.nonTerminalElement.hashCode());
-		result = prime * result
-				+ ((this.tree == null) ? 0 : this.tree.hashCode());
+		result = prime * result + ((this.nonTerminalElement == null) ? 0 : this.nonTerminalElement.hashCode());
+		result = prime * result + ((this.tree == null) ? 0 : this.tree.hashCode());
 		return result;
 	}
 
@@ -57,19 +52,19 @@ public class NonTerminalElementToTree implements Paire<Integer, Tree>,
 	}
 
 	public Integer getLeftElement() {
-		return this.nonTerminalElement;
+		return nonTerminalElement;
 	}
 
 	public Tree getRightElement() {
-		return this.tree;
+		return tree;
 	}
 
 	public String toString() {
-		return "(" + this.nonTerminalElement + ";" + this.tree + ")";
+		return "(" + nonTerminalElement + ";" + tree + ")";
 	}
 
 	public int compareTo(NonTerminalElementToTree arg0) {
-		return (this.toString()).compareTo(arg0.toString());
+		return (toString()).compareTo(arg0.toString());
 	}
 
 }

@@ -21,8 +21,8 @@ import parserCKY.tree.Tree;
 public class Treebank implements Iterable<Tree> {
 
 	private List<Tree> treebank = new ArrayList<Tree>();
-	private int markovDegree = 2; // par défaut markovisation de degré 2 en cas
-									// de binarisation
+	// par défaut markovisation de degré 2 en cas de binarisation
+	private int markovDegree = 2;
 
 	public Treebank() {
 
@@ -39,8 +39,7 @@ public class Treebank implements Iterable<Tree> {
 	 */
 	public Treebank(String filename) {
 		try {
-			Files.lines(Paths.get(filename)).forEach(
-					line -> treebank.add(Tree.stringToTree(line)));
+			Files.lines(Paths.get(filename)).forEach(line -> treebank.add(Tree.stringToTree(line)));
 		} catch (Exception e) {
 			System.out.print("Erreur : ");
 			e.printStackTrace();
@@ -51,10 +50,8 @@ public class Treebank implements Iterable<Tree> {
 	 * Permet de contruire une instance de TreeBank en spécifiant le degré de
 	 * markovisation
 	 * 
-	 * @param filename
-	 *            fichier contenant un treebank
-	 * @param degre
-	 *            degré de markovisation
+	 * @param filename fichier contenant un treebank
+	 * @param degre degré de markovisation
 	 */
 	public Treebank(String filename, int degre) {
 		this(filename);
@@ -81,8 +78,7 @@ public class Treebank implements Iterable<Tree> {
 	}
 
 	public String toString() {
-		String joinedTrees = treebank.stream().map(Tree::toString)
-				.collect(Collectors.joining("\n"));
+		String joinedTrees = treebank.stream().map(Tree::toString).collect(Collectors.joining("\n"));
 		return joinedTrees;
 	}
 
@@ -97,10 +93,7 @@ public class Treebank implements Iterable<Tree> {
 		// Attention ! Cette méthode écrit à la suite du fichier mis en
 		// argument, pas par dessus !
 		try {
-			Files.write(
-					Paths.get(nomFic),
-					treebank.stream().map(tree -> tree.toString())
-							.collect(Collectors.toList()),
+			Files.write(Paths.get(nomFic), treebank.stream().map(tree -> tree.toString()).collect(Collectors.toList()),
 					StandardOpenOption.APPEND);
 			System.out.println("fichier créé");
 		} catch (IOException ioe) {
@@ -114,13 +107,9 @@ public class Treebank implements Iterable<Tree> {
 	}
 
 	public void exportSent(String out) {
-		// Attention ! Cette méthode écrit à la suite du fichier mis en
-		// argument, pas par dessus !
+		// Attention ! Cette méthode écrit à la suite du fichier mis en argument, pas par dessus !
 		try {
-			Files.write(
-					Paths.get(out),
-					treebank.stream().map(tree -> tree.toSentence())
-							.collect(Collectors.toList()),
+			Files.write(Paths.get(out), treebank.stream().map(tree -> tree.toSentence()).collect(Collectors.toList()),
 					StandardOpenOption.APPEND);
 			System.out.println("fichier créé");
 		} catch (IOException ioe) {

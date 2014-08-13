@@ -7,20 +7,20 @@ public class NonTerminalElementToProbability implements Paire<Integer, Double>,
 	private Double probability;
 
 	public NonTerminalElementToProbability(Integer nt, Double poids) {
-		this.nonTerminalElementId = nt;
-		this.probability = poids;
+		nonTerminalElementId = nt;
+		probability = poids;
 	}
 
 	public String toString() {
-		return "(" + this.nonTerminalElementId + ";" + this.probability + ")";
+		return "(" + nonTerminalElementId + ";" + probability + ")";
 	}
 
 	public Integer getLeftElement() {
-		return this.nonTerminalElementId;
+		return nonTerminalElementId;
 	}
 
 	public Double getRightElement() {
-		return this.probability;
+		return probability;
 	}
 
 	/*
@@ -31,13 +31,8 @@ public class NonTerminalElementToProbability implements Paire<Integer, Double>,
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((this.nonTerminalElementId == null) ? 0
-						: this.nonTerminalElementId.hashCode());
-		result = prime
-				* result
-				+ ((this.probability == null) ? 0 : this.probability.hashCode());
+		result = prime * result + ((this.nonTerminalElementId == null) ? 0 : this.nonTerminalElementId.hashCode());
+		result = prime * result + ((this.probability == null) ? 0 : this.probability.hashCode());
 		return result;
 	}
 
@@ -57,8 +52,7 @@ public class NonTerminalElementToProbability implements Paire<Integer, Double>,
 		if (this.nonTerminalElementId == null) {
 			if (other.nonTerminalElementId != null)
 				return false;
-		} else if (!this.nonTerminalElementId
-				.equals(other.nonTerminalElementId))
+		} else if (!this.nonTerminalElementId.equals(other.nonTerminalElementId))
 			return false;
 		if (this.probability == null) {
 			if (other.probability != null)
@@ -69,7 +63,7 @@ public class NonTerminalElementToProbability implements Paire<Integer, Double>,
 	}
 
 	public int compareTo(NonTerminalElementToProbability arg0) {
-		return (this.toString()).compareTo(arg0.toString());
+		return (toString()).compareTo(arg0.toString());
 	}
 
 }

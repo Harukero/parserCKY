@@ -7,14 +7,10 @@ package parserCKY.grammar;
  * 
  * @author antoine,misun,xin
  */
-public class ProbabilisticContextFreeGrammarRule implements
-Comparable<ProbabilisticContextFreeGrammarRule> {
+public class ProbabilisticContextFreeGrammarRule implements Comparable<ProbabilisticContextFreeGrammarRule> {
 
-	public String nonTerminal, rhr1; // non-terminal, élément de gauche de la
-	// règle binaire
-	public String rhr2 = null; // élément de droite de la règle binaire (null si
-	// on a une règle lexicale)
-
+	public String nonTerminal, rhr1; // non-terminal, élément de gauche de la règle binaire
+	public String rhr2 = null; // élément de droite de la règle binaire (null si on a une règle lexicale)
 	public double poids = 1.; // le poids de la règle
 
 	/**
@@ -23,8 +19,7 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 	 * @param non_terminal
 	 * @param terminal
 	 */
-	public ProbabilisticContextFreeGrammarRule(String non_terminal,
-			String terminal) {
+	public ProbabilisticContextFreeGrammarRule(String non_terminal, String terminal) {
 		nonTerminal = non_terminal;
 		rhr1 = terminal;
 	}
@@ -33,13 +28,10 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 	 * Constructeur d'une règle si on veut une règle avec deux non-terminaux
 	 * 
 	 * @param non_terminal
-	 * @param left
-	 *            la partie gauche de la partie droite de règle
-	 * @param right
-	 *            la partie droite de la partie droite de règle
+	 * @param left la partie gauche de la partie droite de règle
+	 * @param right la partie droite de la partie droite de règle
 	 */
-	public ProbabilisticContextFreeGrammarRule(String non_terminal,
-			String left, String right) {
+	public ProbabilisticContextFreeGrammarRule(String non_terminal, String left, String right) {
 		this(non_terminal, left);
 		rhr2 = right;
 	}
@@ -61,6 +53,7 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 		return poids;
 	}
 
+	@Override
 	public String toString() {
 		if (isTerm()) {
 			return nonTerminal + " --> " + rhr1;
@@ -70,11 +63,9 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 
 	public String toExport() {
 		if (isTerm()) {
-			return nonTerminal + "\t" + rhr1 + "\t"
-					+ Math.exp(poids);
+			return nonTerminal + "\t" + rhr1 + "\t" + Math.exp(poids);
 		}
-		return nonTerminal + "\t" + rhr1 + "\t" + rhr2 + "\t"
-		+ Math.exp(poids);
+		return nonTerminal + "\t" + rhr1 + "\t" + rhr2 + "\t" + Math.exp(poids);
 	}
 
 	/**
@@ -83,27 +74,22 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 	 * @param rule
 	 * @return true si oui, non sinon
 	 */
+	@Override
 	public boolean equals(Object rule) {
 		if (rule instanceof ProbabilisticContextFreeGrammarRule) {
-			if (isTerm()
-					&& ((ProbabilisticContextFreeGrammarRule) rule).isTerm()) {
-				return (nonTerminal
-						.equals(((ProbabilisticContextFreeGrammarRule) rule).nonTerminal))
-						&& rhr1
-						.equals(((ProbabilisticContextFreeGrammarRule) rule).rhr1);
-			} else if (!isTerm()
-					&& !((ProbabilisticContextFreeGrammarRule) rule).isTerm()) {
-				return (nonTerminal
-						.equals(((ProbabilisticContextFreeGrammarRule) rule).nonTerminal))
-						&& rhr1
-						.equals(((ProbabilisticContextFreeGrammarRule) rule).rhr1)
-						&& rhr2
-						.equals((((ProbabilisticContextFreeGrammarRule) rule).rhr2));
+			if (isTerm() && ((ProbabilisticContextFreeGrammarRule) rule).isTerm()) {
+				return (nonTerminal.equals(((ProbabilisticContextFreeGrammarRule) rule).nonTerminal))
+						&& rhr1.equals(((ProbabilisticContextFreeGrammarRule) rule).rhr1);
+			} else if (!isTerm() && !((ProbabilisticContextFreeGrammarRule) rule).isTerm()) {
+				return (nonTerminal.equals(((ProbabilisticContextFreeGrammarRule) rule).nonTerminal))
+						&& rhr1.equals(((ProbabilisticContextFreeGrammarRule) rule).rhr1)
+						&& rhr2.equals((((ProbabilisticContextFreeGrammarRule) rule).rhr2));
 			}
 		}
 		return false;
 	}
 
+	@Override
 	public int hashCode() {
 		return toExport().hashCode();
 	}
@@ -115,6 +101,7 @@ Comparable<ProbabilisticContextFreeGrammarRule> {
 		return rhr1.equals(r1);
 	}
 
+	@Override
 	public int compareTo(ProbabilisticContextFreeGrammarRule rule) {
 		return toString().compareTo(rule.toString());
 	}
