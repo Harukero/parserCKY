@@ -5,15 +5,15 @@ public class TokenDependancy {
 	private int index, fatherIndex;
 	private String token, category;
 
-	public TokenDependancy(int indice, String token, String cat, int indicePere) {
-		index = indice;
+	public TokenDependancy(int index, String token, String category, int fatherIndex) {
+		this.index = index;
 		this.token = token;
-		category = cat;
-		fatherIndex = indicePere;
+		this.category = category;
+		this.fatherIndex = fatherIndex;
 	}
 
-	public TokenDependancy(String ligne) {
-		String[] tokenDep = ligne.split("\\t");
+	public TokenDependancy(String line) {
+		String[] tokenDep = line.split("\\t");
 		token = tokenDep[1];
 		category = tokenDep[4];
 		index = Integer.valueOf(tokenDep[0]);

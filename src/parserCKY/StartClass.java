@@ -122,7 +122,7 @@ public class StartClass {
 		String sentence = " ";
 		Scanner sc = new Scanner(System.in);
 		System.out.println("prêt à tenter de parser votre phrase !");
-		while (!(sentence = sc.nextLine()).equals("quit()")) {
+		while (!(sentence = sc.nextLine()).equals("")) {
 			Tree parsedTree = ParserCKY.parse(sentence, gramm);
 			parsedTree.unBinarise();
 		}
