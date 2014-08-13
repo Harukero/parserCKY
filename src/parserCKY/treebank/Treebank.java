@@ -87,13 +87,13 @@ public class Treebank implements Iterable<Tree> {
 	 * écrit dans ce fichier la représentation textuelle des arbres contenus
 	 * dans le treebank
 	 * 
-	 * @param nomFic
+	 * @param filename
 	 */
-	public void exportTreeBank(String nomFic) {
+	public void exportTreeBank(String filename) {
 		// Attention ! Cette méthode écrit à la suite du fichier mis en
 		// argument, pas par dessus !
 		try {
-			Files.write(Paths.get(nomFic), treebank.stream().map(tree -> tree.toString()).collect(Collectors.toList()),
+			Files.write(Paths.get(filename), treebank.stream().map(tree -> tree.toString()).collect(Collectors.toList()),
 					StandardOpenOption.APPEND);
 			System.out.println("fichier créé");
 		} catch (IOException ioe) {

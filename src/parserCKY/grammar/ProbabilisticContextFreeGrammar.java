@@ -125,13 +125,13 @@ public class ProbabilisticContextFreeGrammar {
 	}
 
 	private void filterLexRules() {
-		lexicalRules.forEach((key,value)->key.poids=value);	
+		lexicalRules.forEach((key, value) -> key.poids = value);
 		vocabularySize = lexicalRules.size();
 	}
 
 	// ici on filtre les règles binaires et on met en place les probabilités pour chacunes de ces règles
 	private void filterBinRules() {
-		binaryRules.forEach((key,value)->key.poids=value/countsNonTerminalElements.get(key.nonTerminal));
+		binaryRules.forEach((key, value) -> key.poids = value / countsNonTerminalElements.get(key.nonTerminal));
 	}
 
 	// à partir d'ici on va créer notre lookup matrice où à chaque paire de non
@@ -185,7 +185,7 @@ public class ProbabilisticContextFreeGrammar {
 			if (axiome == null) { // mise en place de l'axiome
 				axiome = tree.getLabel();
 			}
-			if (tree.isLeaf()) { // règle lexicale !
+			if (tree.isLeaf()) { // règle lexicale
 				fillLexicalRule(tree);
 			} else { // règle binaire
 				fillBinaryRule(tree);
@@ -196,29 +196,24 @@ public class ProbabilisticContextFreeGrammar {
 	private void fillBinaryRule(Tree tree) {
 		String elem1 = Utils.getFirstPart(tree.getLabelFromChildAt(0));
 		String elem2 = Utils.getFirstPart(tree.getLabelFromChildAt(1));
-		ProbabilisticContextFreeGrammarRule currentRule = new ProbabilisticContextFreeGrammarRule(tree.getLabel(), elem1, elem2);
-		binaryRules.computeIfPresent(currentRule, (key, value)->value+1.0);
-		binaryRules.putIfAbsent(currentRule, 1.0);
-		updateCountsNonTerm(tree.getLabel());
+		ProbabilisticContextFreeGrammarRule currentRule = new ProbabilisticContextFreeGrammarRule(tree.getLabel(),
+				elem1, elem2);
+		updateMap(binaryRules, currentRule);
+		updateMap(countsNonTerminalElements, tree.getLabel());
 		tree.getChildren().forEach(child -> fillGrammar(child));
 	}
 
 	private void fillLexicalRule(Tree tree) {
 		String[] ntAndLex = tree.getLabel().split(" ");
 		ProbabilisticContextFreeGrammarRule maregle = new ProbabilisticContextFreeGrammarRule(ntAndLex[0], ntAndLex[1]);
-		lexicalRules.computeIfPresent(maregle, (key, value)->value+1.0);
-		lexicalRules.putIfAbsent(maregle, 1.0); // ajout de la règle lexicale
+		updateMap(lexicalRules, maregle);
 		lexicalTokens++;
-		updateCountsNonTerm(ntAndLex[0]); // mise à jour des comptes
+		updateMap(countsNonTerminalElements, ntAndLex[0]);
 	}
 
-	// méthode privée qui met à jour les comptes des non-terminaux de la grammaire
-	private void updateCountsNonTerm(String nt) {
-		if (countsNonTerminalElements.containsKey(nt)) {
-			countsNonTerminalElements.put(nt, new Double(countsNonTerminalElements.get(nt) + 1.));
-		} else {
-			countsNonTerminalElements.put(nt, new Double(1.));
-		}
+	private <K> void updateMap(Map<K, Double> map, K key) {
+		map.computeIfPresent(key, (k, v) -> v + 1.0);
+		map.putIfAbsent(key, 1.0);
 	}
 
 	public String toString() {
@@ -298,7 +293,6 @@ public class ProbabilisticContextFreeGrammar {
 		}
 		return toReturnSuff;
 	}
-	
 
 	public String getAxiome() {
 		return axiome;
