@@ -78,36 +78,14 @@ public class Tree {
 	}
 
 	// la liste des enfants qui partent de la racine de notre arbre
-	private List<Tree> children = new ArrayList<Tree>();
+	private List<Tree> children;
 
-	/**
-	 * Constructeur d'un Tree, construit un arbre sans fils (une feuille)
-	 * 
-	 * @param label
-	 */
 	public Tree(String label) {
-		this.label = label;
+		this(label, new ArrayList<Tree>());
 	}
 
-	public Tree getChildAt(int position) {
-		if (position < 0 || children.size() == 0 || children.size() < position) {
-			return null;
-		}
-		return children.get(position);
-	}
-
-	public String getLabelFromChildAt(int position) {
-		return getChildAt(position) == null ? null : getChildAt(position).label;
-	}
-
-	/**
-	 * Constructeur d'un Tree, construit un arbre en lui ajoutant des fils
-	 * 
-	 * @param label
-	 * @param children
-	 */
 	public Tree(String label, List<Tree> children) {
-		this(label); // ici on applique le constructeur d'au dessus
+		this.label = label;
 		this.children = children; // puis on remplit la liste des fils
 	}
 
@@ -116,11 +94,6 @@ public class Tree {
 		children.add(uniqueChild);
 	}
 
-	/**
-	 * Méthode permettant de savoir si l'arbre courant est une feuille ou non
-	 * 
-	 * @return true si le Tree courant est une feuille, false sinon
-	 */
 	public boolean isLeaf() {
 		return children.isEmpty();
 	}
@@ -135,70 +108,55 @@ public class Tree {
 
 	public String toSentence() {
 		if (isLeaf()) {
-			return label.split(" ")[1];
+			int spacePos = label.indexOf(' ');
+			return label.substring(spacePos + 1);
 		}
 		return children.stream().map(child -> child.toSentence()).collect(Collectors.joining(" "));
 	}
 
-	/**
-	 * Méthode permettant d'ajouter un enfant à l'arbre courant
-	 * 
-	 * @param child
-	 */
 	public void addChild(Tree child) {
 		children.add(child);
 	}
 
-	/**
-	 * Méthode d'instance renvoyant l'arbre courant sous forme d'arbre binarisé
-	 * 
-	 * @param i le nombre d'éléments à conserver quand on crée un nouveau noeud dans l'arbre pour la markovisation
-	 */
 	public void binarise(int i) {
 		int size = children.size();
 		if (label.equals("")) {
 			// treebank, qui est vide
 			children.get(0).binarise(i);
 		}
-		if (!label.equals("") && size == 1) { // gestion des règles unaires
-			label += "*" + children.get(0).label;
-			children = children.get(0).children;
-			binarise(i);
-		}
-		if (size == 2) {
-			for (Tree fils : children) {
-				fils.binarise(i);
-			}
-		}
-		if (size >= 3) { // quand il y a 3 enfants ou plus
-			markovisation(i, size);
+		switch (size) {
+			case 0:
+				break;
+			case 1:
+				if (!label.equals("")) {
+					label += "*" + children.get(0).label;
+					children = children.get(0).children;
+					binarise(i);
+				}
+				break;
+			case 2:
+				children.forEach(tree -> tree.binarise(i));
+				break;
+			default:
+				markovisation(i, size);
+				break;
 		}
 	}
 
 	private void markovisation(int degreMarkovisation, int size) {
 		List<Tree> newFils = new ArrayList<Tree>();
-		// on crée une liste des futurs nouveaux enfants (fils de gauche et faux fils)
 		newFils.add(children.get(0));
-		// on ajoute le premier fils à cette liste
 		List<Tree> filsDuFauxFils = new ArrayList<Tree>();
-		// on crée une liste pour les fils du Faux Fils
 		for (Tree t : (children.subList(1, size))) {
-			// pour tous les autres fils (donc pas le premier)
 			filsDuFauxFils.add(t);
-			// on les ajoute aux fils du faux fils
 		}
 		String newNodeLabel = "";
-		if (degreMarkovisation >= 1)
-			newNodeLabel += Utils.getFirstPart(children.get(1).label) + "$";
-		// on crée ici le nom du Faux fils en récupérant que les non-terminaux
-		if (degreMarkovisation >= 2) {
-			newNodeLabel += Utils.getFirstPart(children.get(2).label) + "$";
+		for (int i = 1; i <= degreMarkovisation && i < size; i++) {
+			newNodeLabel += Utils.getFirstPart(children.get(i).label) + "$";
 		}
 		newFils.add(new Tree(newNodeLabel, filsDuFauxFils));
 		children = newFils;
-		for (Tree fils : children) {
-			fils.binarise(degreMarkovisation);
-		}
+		children.forEach(fils -> fils.binarise(degreMarkovisation));
 	}
 
 	/**
@@ -253,6 +211,17 @@ public class Tree {
 				child.unBinarise();
 			}
 		}
+	}
+
+	public Tree getChildAt(int position) {
+		if (position < 0 || children.size() == 0 || children.size() < position) {
+			return null;
+		}
+		return children.get(position);
+	}
+
+	public String getLabelFromChildAt(int position) {
+		return getChildAt(position) == null ? null : getChildAt(position).label;
 	}
 
 	// Fonctions statiques /////////////////////////////////////

@@ -60,7 +60,8 @@ public class ParserCKY {
 	private static void getBestA(ProbabilisticContextFreeGrammar grammar, int i, int j) {
 		NonTerminalElementToProbability b = chart[begin][split][i]; // récupération de B et sa probabilité
 		NonTerminalElementToProbability c = chart[split][end][j]; // récupération de C et sa probabilité
-		NonTerminalElementToProbability[] toAdd = grammar.lookUp(b.getLeftElement(), c.getLeftElement());
+		NonTerminalElementToProbability[] toAdd = grammar.lookUp(b.getLeftElement(), c.getLeftElement()).toArray(
+				new NonTerminalElementToProbability[0]);
 		// pour chaque A tel que A --> B C est dans la grammaire
 		for (int k = 0; k < toAdd.length; k++) {
 			NonTerminalElementToProbability a = toAdd[k];
@@ -69,7 +70,6 @@ public class ParserCKY {
 			monArbre.addChild(treeChart[begin][split][i].getRightElement()); // ajout du fils gauche
 			monArbre.addChild(treeChart[split][end][j].getRightElement()); // ajout du fils droit
 			prob = a.getRightElement() + b.getRightElement() + c.getRightElement();
-			// assert !prob.isNaN();
 			if (aAjouter.containsKey(a.getLeftElement())) {
 				if (aAjouter.get(a.getLeftElement()).compareTo(prob) <= 0) {
 					aAjouter.put(a.getLeftElement(), prob);
@@ -112,7 +112,7 @@ public class ParserCKY {
 		String axiome = gramm.getAxiome();
 		for (int i = 0; i < probPossibles.length; i++) { // ici on vérifie que la phrase d'input est dans le langage
 			NonTerminalElementToProbability maPaire = probPossibles[i];
-			String categoryPaire = gramm.getNtPos().get(maPaire.getLeftElement()).split("\\*")[0];
+			String categoryPaire = gramm.getPositionForNonTerminal(maPaire.getLeftElement()).split("\\*")[0];
 			if (categoryPaire.equals(axiome)) { // si c'est le cas, on renvoie l'arbre de parsing
 				found = true;
 				if (proba == null || maPaire.getRightElement() > proba) {
@@ -133,12 +133,12 @@ public class ParserCKY {
 		if (tree.isLeaf()) {
 			int spacePos = tree.getLabel().indexOf(' ');
 			Integer key = Integer.valueOf(tree.getLabel().substring(0, spacePos));
-			String category = gramm.getNtPos().get(key);
+			String category = gramm.getPositionForNonTerminal(key);
 			tree.setLabel(category + " " + tree.getLabel().substring(spacePos + 1));
 		} else {
 			if (!tree.getLabel().equals("")) {
 				Integer category = Integer.valueOf(tree.getLabel());
-				tree.setLabel(gramm.getNtPos().get(category));
+				tree.setLabel(gramm.getPositionForNonTerminal(category));
 			}
 			for (Tree t : tree.getChildren()) {
 				buildTree(t, gramm);
@@ -146,7 +146,7 @@ public class ParserCKY {
 		}
 	}
 
-	// prend une table de hashage et renvoie le tableau des PaireLPoids correspondantes aux Entry
+	// prend une table de hashage et renvoie le tableau des NonTerminalElementToProbability correspondantes aux Entry
 	private static NonTerminalElementToProbability[] toPaireArray(Map<Integer, Double> aAjouter) {
 		Set<Entry<Integer, Double>> mesEntries = aAjouter.entrySet();
 		NonTerminalElementToProbability[] toReturn = new NonTerminalElementToProbability[mesEntries.size()];
@@ -157,7 +157,7 @@ public class ParserCKY {
 		return toReturn;
 	}
 
-	// prend une table de hashage et renvoie le tableau des PaireLPoids correspondantes aux Entry
+	// prend une table de hashage et renvoie le tableau des NonTerminalElementToTree correspondantes aux Entry
 	private static NonTerminalElementToTree[] toPaireLTArray(Map<Integer, Tree> aAjouter) {
 		Set<Entry<Integer, Tree>> mesEntries = aAjouter.entrySet();
 		NonTerminalElementToTree[] toReturn = new NonTerminalElementToTree[mesEntries.size()];

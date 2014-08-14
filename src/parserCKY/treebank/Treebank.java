@@ -1,14 +1,12 @@
 package parserCKY.treebank;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import parserCKY.IConstants;
+import parserCKY.Utils;
 import parserCKY.tree.Tree;
 
 /**
@@ -21,11 +19,10 @@ import parserCKY.tree.Tree;
 public class Treebank implements Iterable<Tree> {
 
 	private List<Tree> treebank = new ArrayList<Tree>();
-	// par défaut markovisation de degré 2 en cas de binarisation
-	private int markovDegree = 2;
+	private final int markovDegree;
 
 	public Treebank() {
-
+		this(IConstants.TREEBANK_FILE_PATH);
 	}
 
 	/**
@@ -38,12 +35,7 @@ public class Treebank implements Iterable<Tree> {
 	 * @param filename
 	 */
 	public Treebank(String filename) {
-		try {
-			Files.lines(Paths.get(filename)).forEach(line -> treebank.add(Tree.stringToTree(line)));
-		} catch (Exception e) {
-			System.out.print("Erreur : ");
-			e.printStackTrace();
-		}
+		this(filename, IConstants.MARKOVISATION_DEGREE);
 	}
 
 	/**
@@ -54,8 +46,8 @@ public class Treebank implements Iterable<Tree> {
 	 * @param degre degré de markovisation
 	 */
 	public Treebank(String filename, int degre) {
-		this(filename);
 		markovDegree = degre;
+		Utils.forEachLineInFile(filename, line -> treebank.add(Tree.stringToTree(line)));
 	}
 
 	public void addTree(Tree tree) {
@@ -78,8 +70,7 @@ public class Treebank implements Iterable<Tree> {
 	}
 
 	public String toString() {
-		String joinedTrees = treebank.stream().map(Tree::toString).collect(Collectors.joining("\n"));
-		return joinedTrees;
+		return treebank.stream().map(Tree::toString).collect(Collectors.joining("\n"));
 	}
 
 	/**
@@ -90,32 +81,20 @@ public class Treebank implements Iterable<Tree> {
 	 * @param filename
 	 */
 	public void exportTreeBank(String filename) {
-		// Attention ! Cette méthode écrit à la suite du fichier mis en
-		// argument, pas par dessus !
-		try {
-			Files.write(Paths.get(filename), treebank.stream().map(tree -> tree.toString()).collect(Collectors.toList()),
-					StandardOpenOption.APPEND);
-			System.out.println("fichier créé");
-		} catch (IOException ioe) {
-			System.out.print("Erreur : ");
-			ioe.printStackTrace();
-		}
+		Utils.consumeCollectionToFile(filename, treebank, tree -> tree.toString() + "\n");
 	}
 
 	public Iterator<Tree> iterator() {
 		return treebank.iterator();
 	}
 
-	public void exportSent(String out) {
-		// Attention ! Cette méthode écrit à la suite du fichier mis en argument, pas par dessus !
-		try {
-			Files.write(Paths.get(out), treebank.stream().map(tree -> tree.toSentence()).collect(Collectors.toList()),
-					StandardOpenOption.APPEND);
-			System.out.println("fichier créé");
-		} catch (IOException ioe) {
-			System.out.print("Erreur : ");
-			ioe.printStackTrace();
-		}
+	public void exportSent(String filename) {
+		Utils.consumeCollectionToFile(filename, treebank, tree -> tree.toSentence() + "\n");
+	}
+
+	public static void main(String[] args) {
+		Treebank tb = new Treebank();
+		tb.exportSent(IConstants.TREEBANK_SENTENCE_FILE_PATH);
 	}
 
 }

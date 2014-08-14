@@ -75,10 +75,11 @@ public class StartClass {
 	public static void parseDocument(String treebank, String inFilename, String outFilename, boolean dep)
 			throws IOException {
 		Treebank tb;
-		if (!dep)
-			tb = new Treebank(treebank, 2);
-		else
+		if (!dep) {
+			tb = new Treebank(treebank);
+		} else {
 			tb = new TreebankDependancy(treebank);
+		}
 		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		FileReader fr = new FileReader(new File(inFilename));
 		BufferedReader breader = new BufferedReader(fr);
@@ -114,7 +115,7 @@ public class StartClass {
 
 		Treebank tb;
 		if (!dep) {
-			tb = new Treebank(treebank, 2);
+			tb = new Treebank(treebank);
 		} else {
 			tb = new TreebankDependancy(treebank);
 		}
