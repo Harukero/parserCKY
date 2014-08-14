@@ -16,12 +16,11 @@ public class ProbabilisticContextFreeGrammarRule implements Comparable<Probabili
 	/**
 	 * Constructeur d'une règle si on veut une règle terminale
 	 * 
-	 * @param non_terminal
+	 * @param nonTerminal
 	 * @param terminal
 	 */
-	public ProbabilisticContextFreeGrammarRule(String non_terminal, String terminal) {
-		nonTerminal = non_terminal;
-		rhr1 = terminal;
+	public ProbabilisticContextFreeGrammarRule(String nonTerminal, String terminal) {
+		this(nonTerminal, terminal, null);
 	}
 
 	/**
@@ -31,8 +30,9 @@ public class ProbabilisticContextFreeGrammarRule implements Comparable<Probabili
 	 * @param left la partie gauche de la partie droite de règle
 	 * @param right la partie droite de la partie droite de règle
 	 */
-	public ProbabilisticContextFreeGrammarRule(String non_terminal, String left, String right) {
-		this(non_terminal, left);
+	public ProbabilisticContextFreeGrammarRule(String nonTerminal, String left, String right) {
+		this.nonTerminal = nonTerminal;
+		rhr1 = left;
 		rhr2 = right;
 	}
 

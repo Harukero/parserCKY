@@ -10,37 +10,31 @@ import parserCKY.grammar.ProbabilisticContextFreeGrammar;
 import parserCKY.parser.ParserCKY;
 import parserCKY.tree.Tree;
 import parserCKY.treebank.Treebank;
-import parserCKY.treebank.TreebankDependancy;
 
 public class StartClass {
 
 	private static final String HELP = "--help";
 	private static final String PARSE = "--parse";
-	private static final String DEP = "--dep";
 	private static final String PARSE_DOC = "--parseDoc";
 
 	public static void main(String[] args) throws IOException {
 		int nb_args = args.length;
 		if (args.length == 0) {
 			usage();
-			System.exit(0);
+			return;
 		}
 		switch (args[0]) {
 			case HELP:
 				usage();
 				break;
 			case PARSE:
-				if (nb_args == 2) {
-					parse(args[1], false);
-				} else if (nb_args == 3 && args[2].equals(DEP)) {
-					parse(args[1], true);
-				}
+				parse(IConstants.SEQUOIA_CORPUS_PATH);
 				break;
 			case PARSE_DOC:
-				if (nb_args == 4) {
-					parseDocument(args[1], args[2], args[3], false);
-				} else if (nb_args == 5 && args[4].equals(DEP)) {
-					parseDocument(args[1], args[2], args[3], true);
+				if (nb_args == 3) {
+					parseDocument(IConstants.SEQUOIA_CORPUS_PATH, args[2], args[3]);
+				} else {
+					usage();
 				}
 				break;
 			default:
@@ -54,12 +48,10 @@ public class StartClass {
 				.println("Ce programme est un parser probabiliste parsant via l'algorithme CKY\n"
 						+ "Options :\n"
 						+ "\t--help : \taffiche cette aide\n"
-						+ "\t--parse treebankfile [--dep]:\n "
+						+ "\t--parse :\n "
 						+ "\t\tparse une à une des phrases à écrire soit même une à une à partir d'un treebank à donner en argument.\n "
-						+ "\t\tAjouter l'option --dep si votre treebank est en dépendance\n"
-						+ "\t--parseDoc treebankfile file2parse outputfile [--dep] : \n"
-						+ "\t\tParse ligne par ligne un document complet à partir d'un treebank, considéré en constituant par défaut.\n"
-						+ "\t\tAjouter l'option --dep si votre treebank est en dépendance");
+						+ "\t--parseDoc file2parse outputfile : \n"
+						+ "\t\tParse ligne par ligne un document complet à partir d'un treebank, considéré en constituant par défaut.\n");
 	}
 
 	/**
@@ -72,14 +64,8 @@ public class StartClass {
 	 * @param outFilename un nom de fichier où exporter le résultat
 	 * @throws IOException
 	 */
-	public static void parseDocument(String treebank, String inFilename, String outFilename, boolean dep)
-			throws IOException {
-		Treebank tb;
-		if (!dep) {
-			tb = new Treebank(treebank);
-		} else {
-			tb = new TreebankDependancy(treebank);
-		}
+	public static void parseDocument(String treebank, String inFilename, String outFilename) throws IOException {
+		Treebank tb = new Treebank(treebank);
 		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		FileReader fr = new FileReader(new File(inFilename));
 		BufferedReader breader = new BufferedReader(fr);
@@ -111,14 +97,9 @@ public class StartClass {
 	 * @param treebank
 	 *            un fichier contenant un treebank
 	 */
-	public static void parse(String treebank, boolean dep) {
+	public static void parse(String treebank) {
 
-		Treebank tb;
-		if (!dep) {
-			tb = new Treebank(treebank);
-		} else {
-			tb = new TreebankDependancy(treebank);
-		}
+		Treebank tb = new Treebank(treebank);
 		ProbabilisticContextFreeGrammar gramm = new ProbabilisticContextFreeGrammar(tb);
 		String sentence = " ";
 		Scanner sc = new Scanner(System.in);

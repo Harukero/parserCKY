@@ -22,7 +22,7 @@ public class Treebank implements Iterable<Tree> {
 	private final int markovDegree;
 
 	public Treebank() {
-		this(IConstants.TREEBANK_FILE_PATH);
+		this(IConstants.SEQUOIA_CORPUS_PATH);
 	}
 
 	/**
@@ -90,11 +90,6 @@ public class Treebank implements Iterable<Tree> {
 
 	public void exportSent(String filename) {
 		Utils.consumeCollectionToFile(filename, treebank, tree -> tree.toSentence() + "\n");
-	}
-
-	public static void main(String[] args) {
-		Treebank tb = new Treebank();
-		tb.exportSent(IConstants.TREEBANK_SENTENCE_FILE_PATH);
 	}
 
 }

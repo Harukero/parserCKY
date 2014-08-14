@@ -1,0 +1,98 @@
+Sequoia corpus v4.0
+-------------------
+october 2012
+
+The corpus contains French sentences, from Europarl, Est Republicain newspaper, 
+French Wikipedia and European Medicine Agency.
+
+The corpus is freely available under the free licence LGPL-LR 
+(Lesser General Public License For Linguistic Resources)
+ cf. http://infolingu.univ-mlv.fr/DonneesLinguistiques/Lexiques-Grammaires/lgpllr.html
+
+If you use it, please cite the following paper:
+
+Candito M. and Seddah D., 2012 : "Le corpus Sequoia : annotation syntaxique et exploitation pour l’adaptation d’analyseur par pont lexical", Actes de TALN'2012, Grenoble, France
+
+The total number of sentences is around 3200, and each sentence is 
+annotated for part-of-speech and phrase-structure, following 
+the French Treebank guidelines
+( http://www.llf.cnrs.fr/Gens/Abeille/French-Treebank-fr.php ).
+
+The constituency trees were then automatically converted to dependency trees.
+
+Manual corrections were performed on the version 3.1 to obtain versions 3.2 and further 3.3. The corrected errors were spotted by Bruno Guillaume, using the grew tool, on the
+automatically converted dependency trees.
+( http://wikilligramme.loria.fr/doku.php?id=sequoia )
+
+Versions 4.0 and above contain manual annotations of long-distance dependencies, as described in :
+Candito M. and Seddah D., "Effectively long-distance dependencies in French : annotation and parsing evaluation", Proceedings of TLT'11, 2012, Lisbon, Portugal)
+
+
+Version history
+---------------
+
+V4.0  october 2012
+     Manual annotation of long distance dependencies.
+     In the conll files, columns 7 and 8 give the head and dependency label that take into account non-local phenomena, leading to sometimes non projective trees. Columns 9 and 10 contain the head and dependency label obtained via automatic conversion, and are necessarily projective.
+
+V3.3 july 2012
+     Manual corrections of errors that were spotted by Bruno Guillaume using grew :
+     http://wikilligramme.loria.fr/doku.php?id=sequoia   
+     - 60 corrected errors in the phrase-structure trees
+     - 13 errors coming from the automatic conversion to dependencies (still to correct)
+     - 45 false errors (no correction to make)
+
+     Addition of the *xml files : phrase structure trees in the XML format of the FTB
+
+V3.2 a few manual corrections
+
+V3.1 addition of the *+fct.mrg_strict files, strictly compliant to the FTB annotation scheme
+
+V3.0 june 2012
+     First public release
+
+Content
+-------
+
+** Files *+fct.mrg_strict are files with one sentence per line,
+   with phrase-structure in bracketed format,
+   in which the phrase-structures are strictly compliant to the French Treebank annotation scheme.
+
+** Files *.xml are the XML FrenchTreebank format for the *+fct.mrg_strict files 
+
+** Files *+fct.mrg are the same sentences, still in bracketed format, but with
+   phrase-structures compliant to the ftb-uc treebank instanciation :
+   - prepositions that dominate a infinitival VP do project a PP
+   - any sentence introduced by a complementizer (CS tag) is grouped into a Sint constituent
+
+** Files *conll are obtained through automatic conversion of the *+fct.mrg files to 
+   surfacic projective dependency trees, in CoNLL 2006 format
+   From version 4.0, columns 7 and 8 give the head and dependency label that take into account manual annotation of LDDs, that override the automatic conversion, leading to sometimes non projective trees. Columns 9 and 10 contain the head and dependency label obtained via automatic conversion, and are necessarily projective. 
+
+Number of sentences for each sub-domain :
+----------------------------------------
+
+561 sentences	Europarl	 file= Europar.550+fct.mrg	
+529 sentences	EstRepublicain   file= annodis.er+fct.mrg 
+996 sentences	French Wikipedia file= frwiki_50.1000+fct.mrg
+574 sentences	EMEA (dev)  	 file= emea-fr-dev+fct.mrg
+544 sentences	EMEA (test) 	 file= emea-fr-test+fct.mrg
+ 
+
+Data split (TALN 2012 experiments)
+----------------------------------
+
+The "neutral" domain is made of EstRepublicain + Europarl + FrWiki,
+and the split into dev and test sets is the following :
+
+head -265 annodis.er+fct.mrg >> sequoia-neutre-dev+fct.mrg
+head -280 Europar.550+fct.mrg >> sequoia-neutre-dev+fct.mrg
+head -498 frwiki_50.1000+fct.mrg >> sequoia-neutre-dev+fct.mrg
+
+tail -264 annodis.er+fct.mrg >> sequoia-neutre-test+fct.mrg
+tail -281 Europar.550+fct.mrg >> sequoia-neutre-test+fct.mrg
+tail -498 frwiki_50.1000+fct.mrg >> sequoia-neutre-test+fct.mrg
+
+
+
+Contact : marie.candito@gmail.com, djame.seddah@paris-sorbonne.fr

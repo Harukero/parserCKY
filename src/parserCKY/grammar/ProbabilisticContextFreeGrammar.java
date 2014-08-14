@@ -155,7 +155,7 @@ public class ProbabilisticContextFreeGrammar {
 			tree.getChildren().forEach(child -> fillGrammar(child));
 		} else {
 			if (axiome == null) { // mise en place de l'axiome
-				axiome = tree.getLabel();
+				axiome = tree.getLabel().split("\\*")[0];
 			}
 			if (tree.isLeaf()) { // règle lexicale
 				fillLexicalRule(tree);
@@ -241,11 +241,11 @@ public class ProbabilisticContextFreeGrammar {
 
 	private Set<NonTerminalElementToProbability> returnSuffixes(int size,
 			Set<NonTerminalElementToProbability> toReturnSuff, String r1) {
-		String suffixe = r1.substring(size - 3, size).toLowerCase();
+		String suffixe = r1.substring(size - 3).toLowerCase();
 		if (toReturnSuff.size() == 0 && lexicalSuffixesLookUpMatrix.containsKey(suffixe)) {
 			lexicalSuffixesLookUpMatrix.get(suffixe);
 		}
-		if (toReturnSuff.size() == 0 && Character.isDigit(r1.charAt(size - 1))) {
+		if (toReturnSuff.size() == 0 && Character.isDigit(r1.charAt(0))) {
 			toReturnSuff = lexicalSuffixesLookUpMatrix.get(DIGITS);
 		}
 		return toReturnSuff;
